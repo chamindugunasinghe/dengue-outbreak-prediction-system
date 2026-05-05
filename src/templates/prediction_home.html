@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dengue Outbreak Prediction Module</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b2633;
+            --panel: #ffffff;
+            --ink: #102f3d;
+            --muted: #62727c;
+            --line: rgba(11, 50, 67, 0.12);
+            --teal: #007c89;
+            --teal-bright: #00c3d0;
+            --green: #2d9d62;
+            --blue: #2d76b7;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #ffffff;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+                radial-gradient(circle at 20% 15%, rgba(0, 195, 208, 0.22), transparent 34%),
+                linear-gradient(135deg, #071820 0%, #123443 48%, #0b2633 100%);
+            background-size: 72px 72px, 72px 72px, auto, auto;
+        }
+
+        .topbar {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(7, 24, 32, 0.84);
+            backdrop-filter: blur(12px);
+        }
+
+        .topbar-inner {
+            width: min(1120px, calc(100% - 40px));
+            height: 72px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 195, 208, 0.13);
+            border: 1px solid rgba(0, 195, 208, 0.32);
+            color: var(--teal-bright);
+        }
+
+        .brand-title {
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: 800;
+        }
+
+        .brand-subtitle {
+            margin-top: 2px;
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .back-link {
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .module-nav {
+            margin-bottom: 24px;
+        }
+
+        .module-nav .back-link {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .back-link i,
+        .back-link span {
+            color: #ffffff;
+        }
+
+        .module-nav .back-link:hover {
+            background: rgba(255, 255, 255, 0.13);
+            border-color: rgba(0, 195, 208, 0.34);
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 4px;
+            min-height: 36px;
+            padding: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .lang-btn {
+            min-width: 40px;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.64);
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            background: rgba(0, 195, 208, 0.2);
+            color: #ffffff;
+        }
+
+        .page {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 58px 0 42px;
+        }
+
+        .hero {
+            max-width: 850px;
+            margin-bottom: 30px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: #84e2e9;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: none;
+        }
+
+        h1 {
+            font-size: clamp(38px, 5vw, 60px);
+            line-height: 1.04;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .hero-copy {
+            max-width: 720px;
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 17px;
+            line-height: 27px;
+        }
+
+        .module-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            padding: 22px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .summary-title {
+            font-size: 18px;
+            line-height: 24px;
+            font-weight: 800;
+        }
+
+        .summary-text {
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 14px;
+            line-height: 22px;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .metric {
+            padding: 12px;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .metric-value {
+            color: #ffffff;
+            font-size: 20px;
+            line-height: 24px;
+            font-weight: 800;
+        }
+
+        .metric-label {
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .action-card {
+            min-height: 280px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            box-shadow: 0 18px 44px rgba(2, 15, 22, 0.24);
+        }
+
+        .action-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 124, 137, 0.1);
+            border: 1px solid rgba(0, 124, 137, 0.22);
+            color: var(--teal);
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .action-card:nth-child(2) .action-icon {
+            background: rgba(45, 157, 98, 0.1);
+            border-color: rgba(45, 157, 98, 0.22);
+            color: var(--green);
+        }
+
+        .action-card:nth-child(3) .action-icon {
+            background: rgba(45, 118, 183, 0.1);
+            border-color: rgba(45, 118, 183, 0.22);
+            color: var(--blue);
+        }
+
+        .action-title {
+            font-size: 20px;
+            line-height: 25px;
+            font-weight: 800;
+        }
+
+        .action-text {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 20px;
+        }
+
+        .action-button {
+            margin-top: auto;
+            min-height: 42px;
+            border: none;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: var(--teal);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .action-card:nth-child(2) .action-button {
+            background: var(--green);
+        }
+
+        .action-card:nth-child(3) .action-button {
+            background: var(--blue);
+        }
+
+        .footer {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 26px 0 34px;
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .module-panel,
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .topbar-inner,
+            .page,
+            .footer {
+                width: min(100% - 28px, 1120px);
+            }
+
+            .topbar-inner {
+                height: auto;
+                min-height: 72px;
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 12px 0;
+            }
+
+            .page {
+                padding-top: 34px;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div>
+                    <div class="brand-title" data-i18n="brand_title">Dengue Outbreak Prediction Sri Lanka</div>
+                    <div class="brand-subtitle" data-i18n="brand_subtitle">Prediction module home</div>
+                </div>
+            </div>
+            <div class="top-actions">
+                <div class="language-switcher" aria-label="Language switcher">
+                    <button class="lang-btn active" id="lang-en" type="button" onclick="switchLanguage('en')">EN</button>
+                    <button class="lang-btn" id="lang-si" type="button" onclick="switchLanguage('si')">SI</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+        <nav class="module-nav" aria-label="Module navigation">
+            <a class="back-link" href="/"><i class="fas fa-arrow-left"></i> <span data-i18n="framework_home">Framework Home</span></a>
+        </nav>
+
+        <section class="hero">
+            <div class="eyebrow"><i class="fas fa-shield-virus"></i> <span data-i18n="eyebrow">eXplainable Artificial Intelligence</span></div>
+            <h1 data-i18n="hero_title">Dengue Outbreak Prediction Sri Lanka</h1>
+            <p class="hero-copy" data-i18n="hero_copy">
+                Use this module to open the district forecast model, review the planning dashboard, or inspect real-world validation analytics.
+            </p>
+        </section>
+
+        <section class="module-panel" aria-label="Prediction module summary">
+            <div class="summary-card">
+                <div class="summary-title" data-i18n="module_overview">Module Overview</div>
+                <p class="summary-text" data-i18n="module_text">
+                    This prediction module combines official dengue case context, district-level historical patterns, and weather data to support early warning decisions for Sri Lanka.
+                </p>
+                <div class="metric-row">
+                    <div class="metric">
+                        <div class="metric-value">25</div>
+                        <div class="metric-label" data-i18n="metric_districts">Districts</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">7</div>
+                        <div class="metric-label" data-i18n="metric_days">Forecast days</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">WER</div>
+                        <div class="metric-label" data-i18n="metric_source">Official case source</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="action-grid" aria-label="Prediction module actions">
+            <article class="action-card">
+                <div class="action-icon"><i class="fas fa-map-location-dot"></i></div>
+                <h2 class="action-title" data-i18n="forecast_title">Launch Forecast Model</h2>
+                <p class="action-text" data-i18n="forecast_text">Open the district map and 7-day dengue risk forecast panel.</p>
+                <a class="action-button" href="/dashboard"><span data-i18n="open_forecast">Open Forecast</span> <i class="fas fa-arrow-right"></i></a>
+            </article>
+
+            <article class="action-card">
+                <div class="action-icon"><i class="fas fa-building-columns"></i></div>
+                <h2 class="action-title" data-i18n="ministry_title">Ministry Dashboard</h2>
+                <p class="action-text" data-i18n="ministry_text">View district priorities, weekly predicted case estimates, and national planning summaries.</p>
+                <a class="action-button" href="/ministry-dashboard"><span data-i18n="open_dashboard">Open Dashboard</span> <i class="fas fa-arrow-right"></i></a>
+            </article>
+
+            <article class="action-card">
+                <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
+                <h2 class="action-title" data-i18n="analytics_title">System Analytics</h2>
+                <p class="action-text" data-i18n="analytics_text">Review model validation results, class metrics, confusion matrix, and dataset insights.</p>
+                <a class="action-button" href="/analytics"><span data-i18n="open_analytics">Open Analytics</span> <i class="fas fa-arrow-right"></i></a>
+            </article>
+        </section>
+    </main>
+
+    <footer class="footer" data-i18n="footer">
+        © 2026 Dengue Outbreak Prediction Module
+    </footer>
+    <script>
+        const translations = {
+            en: {
+                page_title: 'Dengue Outbreak Prediction Module',
+                brand_title: 'Dengue Outbreak Prediction Sri Lanka',
+                brand_subtitle: 'Prediction module home',
+                framework_home: 'Framework Home',
+                eyebrow: 'eXplainable Artificial Intelligence',
+                hero_title: 'Dengue Outbreak Prediction Sri Lanka',
+                hero_copy: 'Use this module to open the district forecast model, review the planning dashboard, or inspect real-world validation analytics.',
+                module_overview: 'Module Overview',
+                module_text: 'This prediction module combines official dengue case context, district-level historical patterns, and weather data to support early warning decisions for Sri Lanka.',
+                metric_districts: 'Districts',
+                metric_days: 'Forecast days',
+                metric_source: 'Official case source',
+                forecast_title: 'Launch Forecast Model',
+                forecast_text: 'Open the district map and 7-day dengue risk forecast panel.',
+                open_forecast: 'Open Forecast',
+                ministry_title: 'Ministry Dashboard',
+                ministry_text: 'View district priorities, weekly predicted case estimates, and national planning summaries.',
+                open_dashboard: 'Open Dashboard',
+                analytics_title: 'System Analytics',
+                analytics_text: 'Review model validation results, class metrics, confusion matrix, and dataset insights.',
+                open_analytics: 'Open Analytics',
+                footer: '© 2026 Dengue Outbreak Prediction Module'
+            },
+            si: {
+                page_title: 'ඩෙංගු පැතිරීම පුරෝකථන මොඩියුලය',
+                brand_title: 'ශ්‍රී ලංකා ඩෙංගු පැතිරීම පුරෝකථනය',
+                brand_subtitle: 'පුරෝකථන මොඩියුල මුල් පිටුව',
+                framework_home: 'ප්‍රධාන රාමුව',
+                eyebrow: 'විස්තර කළ හැකි කෘත්‍රිම බුද්ධිය',
+                hero_title: 'ශ්‍රී ලංකා ඩෙංගු පැතිරීම පුරෝකථනය',
+                hero_copy: 'දිස්ත්‍රික් පුරෝකථන ආකෘතිය විවෘත කිරීමට, සැලසුම් පුවරුව බැලීමට හෝ සැබෑ දත්ත මත පදනම් වූ විශ්ලේෂණ පරීක්ෂා කිරීමට මෙම මොඩියුලය භාවිතා කරන්න.',
+                module_overview: 'මොඩියුල සාරාංශය',
+                module_text: 'මෙම පුරෝකථන මොඩියුලය නිල ඩෙංගු සිද්ධි තොරතුරු, දිස්ත්‍රික් මට්ටමේ ඉතිහාස රටා සහ කාලගුණ දත්ත එකතු කර ශ්‍රී ලංකාව සඳහා ඉක්මන් අනතුරු ඇඟවීම් සඳහා සහය දක්වයි.',
+                metric_districts: 'දිස්ත්‍රික්ක',
+                metric_days: 'පුරෝකථන දින',
+                metric_source: 'නිල සිද්ධි මූලාශ්‍රය',
+                forecast_title: 'පුරෝකථන ආකෘතිය ආරම්භ කරන්න',
+                forecast_text: 'දිස්ත්‍රික් සිතියම සහ දින 7 ඩෙංගු අවදානම් පුවරුව විවෘත කරන්න.',
+                open_forecast: 'පුරෝකථනය විවෘත කරන්න',
+                ministry_title: 'අමාත්‍යාංශ පුවරුව',
+                ministry_text: 'දිස්ත්‍රික් ප්‍රමුඛතා, සතිපතා පුරෝකථිත සිද්ධි ඇස්තමේන්තු සහ ජාතික සැලසුම් සාරාංශ බලන්න.',
+                open_dashboard: 'පුවරුව විවෘත කරන්න',
+                analytics_title: 'පද්ධති විශ්ලේෂණ',
+                analytics_text: 'ආකෘති වලංගුකරණ ප්‍රතිඵල, වර්ග මිනුම්, ගැටලු මැට්‍රික්සය සහ දත්ත කට්ටල තොරතුරු පරීක්ෂා කරන්න.',
+                open_analytics: 'විශ්ලේෂණ විවෘත කරන්න',
+                footer: '© 2026 ඩෙංගු පැතිරීම පුරෝකථන මොඩියුලය'
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('dengue_language') || 'en';
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('dengue_language', lang);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const dictionary = translations[currentLanguage] || translations.en;
+            document.documentElement.lang = currentLanguage;
+            document.title = dictionary.page_title;
+
+            document.querySelectorAll('[data-i18n]').forEach((element) => {
+                const key = element.getAttribute('data-i18n');
+                element.textContent = dictionary[key] || translations.en[key] || element.textContent;
+            });
+
+            document.getElementById('lang-en').classList.toggle('active', currentLanguage === 'en');
+            document.getElementById('lang-si').classList.toggle('active', currentLanguage === 'si');
+        }
+
+        document.addEventListener('DOMContentLoaded', updateLanguage);
+    </script>
+</body>
+</html>

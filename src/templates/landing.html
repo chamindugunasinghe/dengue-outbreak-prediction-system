@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Pathways to Prevention</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0c222d;
+            --panel: #f6fafb;
+            --panel-strong: #ffffff;
+            --ink: #0d2632;
+            --muted: #657781;
+            --line: rgba(11, 50, 67, 0.12);
+            --teal: #007c89;
+            --teal-bright: #00c3d0;
+            --amber: #d99a00;
+            --red: #d64b5f;
+            --green: #2d9d62;
+            --blue: #2d76b7;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #ffffff;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+                radial-gradient(circle at 18% 22%, rgba(0, 195, 208, 0.22), transparent 34%),
+                radial-gradient(circle at 88% 12%, rgba(45, 118, 183, 0.22), transparent 30%),
+                linear-gradient(135deg, #071820 0%, #123443 48%, #0b2633 100%);
+            background-size: 72px 72px, 72px 72px, auto, auto, auto;
+            overflow-x: hidden;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(7, 24, 32, 0.84);
+            backdrop-filter: blur(12px);
+        }
+
+        .topbar-inner {
+            width: min(1180px, calc(100% - 40px));
+            height: 72px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .brand-mark {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 20px rgba(2, 15, 22, 0.18);
+            flex-shrink: 0;
+        }
+
+        .brand-logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-title {
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: 800;
+            letter-spacing: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .brand-subtitle {
+            margin-top: 2px;
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--green);
+            box-shadow: 0 0 0 4px rgba(45, 157, 98, 0.14);
+        }
+
+        .page {
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 54px 0 36px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 28px;
+            align-items: end;
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: #84e2e9;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 860px;
+            font-size: clamp(36px, 5vw, 64px);
+            line-height: 1.02;
+            letter-spacing: 0;
+            font-weight: 800;
+        }
+
+        .hero-copy {
+            max-width: 760px;
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 17px;
+            line-height: 27px;
+        }
+
+        .framework-panel {
+            padding: 18px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .panel-meta {
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .signal-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .signal-item {
+            display: grid;
+            grid-template-columns: 32px 1fr auto;
+            align-items: center;
+            gap: 10px;
+            min-height: 46px;
+            padding: 7px 9px;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .signal-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 7px;
+            background: rgba(0, 195, 208, 0.12);
+            color: #86ecf3;
+        }
+
+        .signal-name {
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .signal-detail {
+            margin-top: 2px;
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .signal-state {
+            color: #93ecb8;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin: 10px 0 16px;
+        }
+
+        .section-label {
+            color: #9de8ee;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin-top: 6px;
+            font-size: 26px;
+            line-height: 32px;
+            font-weight: 800;
+        }
+
+        .section-note {
+            max-width: 390px;
+            color: rgba(255, 255, 255, 0.68);
+            font-size: 13px;
+            line-height: 20px;
+            text-align: right;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .component-card {
+            position: relative;
+            min-height: 330px;
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--panel-strong);
+            color: var(--ink);
+            box-shadow: 0 18px 44px rgba(2, 15, 22, 0.24);
+        }
+
+        .component-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .component-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .component-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 12%, white);
+            border: 1px solid color-mix(in srgb, var(--accent) 26%, white);
+            font-size: 20px;
+        }
+
+        .component-number {
+            color: #8a99a1;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .component-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 24px;
+            padding: 0 8px;
+            border-radius: 999px;
+            background: #f2f6f8;
+            color: #526771;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .component-status.active {
+            color: #1e7549;
+            background: rgba(45, 157, 98, 0.12);
+        }
+
+        .component-status.planned {
+            color: #8b6615;
+            background: rgba(217, 154, 0, 0.14);
+        }
+
+        .component-title {
+            min-height: 72px;
+            font-size: 20px;
+            line-height: 24px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .component-description {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 20px;
+        }
+
+        .component-points {
+            display: grid;
+            gap: 8px;
+            margin: 16px 0 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .component-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: #364c57;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 600;
+        }
+
+        .component-point i {
+            margin-top: 3px;
+            color: var(--accent);
+            font-size: 11px;
+        }
+
+        .component-action {
+            margin-top: auto;
+            width: 100%;
+            min-height: 42px;
+            border: none;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: var(--accent);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+        }
+
+        .component-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 32%, transparent);
+        }
+
+        .component-action.secondary {
+            background: #eaf1f4;
+            color: #213b48;
+        }
+
+        .component-action.secondary:hover {
+            box-shadow: 0 8px 18px rgba(12, 34, 45, 0.12);
+        }
+
+        .footer {
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 26px 0 34px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.76);
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(3, 14, 20, 0.72);
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(420px, 100%);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .modal-title {
+            font-size: 16px;
+            line-height: 22px;
+            font-weight: 800;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background: #eef4f7;
+            color: #25414e;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 18px;
+            color: #526771;
+            font-size: 14px;
+            line-height: 22px;
+        }
+
+        @media (max-width: 1120px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .framework-panel {
+                max-width: 560px;
+            }
+
+            .component-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .component-title {
+                min-height: auto;
+            }
+
+            .section-note {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .topbar-inner,
+            .page,
+            .footer {
+                width: min(100% - 28px, 1180px);
+            }
+
+            .topbar-inner {
+                height: auto;
+                min-height: 72px;
+                padding: 12px 0;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .status-chip {
+                white-space: normal;
+            }
+
+            .page {
+                padding-top: 34px;
+            }
+
+            .hero-copy {
+                font-size: 15px;
+                line-height: 24px;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .component-card {
+                min-height: auto;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <div class="brand-mark">
+                    <img class="brand-logo-image" src="{{ url_for('static', filename='digital_pathways_logo.png') }}" alt="Digital Pathways to Prevention logo">
+                </div>
+                <div>
+                    <div class="brand-title">Dengue Prevention Framework</div>
+                    <div class="brand-subtitle">Sri Lanka Integrated Control System</div>
+                </div>
+            </div>
+            <div class="status-chip">
+                <span class="status-dot"></span>
+                LIVE
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="hero" aria-labelledby="main-title">
+            <div>
+                <div class="eyebrow"><i class="fas fa-network-wired"></i> Integrated framework</div>
+                <h1 id="main-title">Digital Pathways to Prevention: An Integrated Framework for Dengue Prediction and Control in Sri Lanka</h1>
+                <p class="hero-copy">
+                    Select a component to continue. The framework connects environmental surveillance, outbreak forecasting, mosquito species identification, and resource planning into one prevention-focused decision support pathway.
+                </p>
+            </div>
+
+            <aside class="framework-panel" aria-label="Framework data flow">
+                <div class="panel-heading">
+                    <div class="panel-title">Framework Flow</div>
+                    <div class="panel-meta">Prevention pipeline</div>
+                </div>
+                <div class="signal-list">
+                    <div class="signal-item">
+                        <span class="signal-icon"><i class="fas fa-location-dot"></i></span>
+                        <div>
+                            <div class="signal-name">Locate</div>
+                            <div class="signal-detail">Breeding areas and field evidence</div>
+                        </div>
+                        <span class="signal-state">Input</span>
+                    </div>
+                    <div class="signal-item">
+                        <span class="signal-icon"><i class="fas fa-chart-line"></i></span>
+                        <div>
+                            <div class="signal-name">Predict</div>
+                            <div class="signal-detail">District-level dengue risk</div>
+                        </div>
+                        <span class="signal-state">Model</span>
+                    </div>
+                    <div class="signal-item">
+                        <span class="signal-icon"><i class="fas fa-microscope"></i></span>
+                        <div>
+                            <div class="signal-name">Identify</div>
+                            <div class="signal-detail">Vector species evidence</div>
+                        </div>
+                        <span class="signal-state">AI</span>
+                    </div>
+                    <div class="signal-item">
+                        <span class="signal-icon"><i class="fas fa-truck-medical"></i></span>
+                        <div>
+                            <div class="signal-name">Allocate</div>
+                            <div class="signal-detail">Resources and hotspots</div>
+                        </div>
+                        <span class="signal-state">Action</span>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <section aria-labelledby="component-title">
+            <div class="section-header">
+                <div>
+                    <div class="section-label">Component Launcher</div>
+                    <h2 class="section-title" id="component-title">Choose what you want to do</h2>
+                </div>
+            </div>
+
+            <div class="component-grid">
+                <article class="component-card" style="--accent: var(--blue);">
+                    <div class="component-top">
+                        <div>
+                            <div class="component-icon"><i class="fas fa-map-location-dot"></i></div>
+                        </div>
+                        <span class="component-status active">Available</span>
+                    </div>
+                    <h3 class="component-title">Detection of Mosquito Breeding Areas in Sri Lanka</h3>
+                    <p class="component-description">Entry point for mapping potential breeding locations using image, field, or location-based evidence.</p>
+                    <div class="component-points">
+                        <div class="component-point"><i class="fas fa-check"></i><span>Supports location-based prevention workflows</span></div>
+                        <div class="component-point"><i class="fas fa-check"></i><span>Designed for field inspection evidence</span></div>
+                    </div>
+                    <button class="component-action" type="button" onclick="navigateTo('https://uav-waste-detection-production.up.railway.app/login')">
+                        <span>Open Component</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </article>
+
+                <article class="component-card" style="--accent: var(--teal);">
+                    <div class="component-top">
+                        <div>
+                            <div class="component-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                        <span class="component-status active">Available</span>
+                    </div>
+                    <h3 class="component-title">Dengue Outbreak Prediction Sri Lanka</h3>
+                    <p class="component-description">Launch the working 7-day district risk forecast using weather, official case context, and trained ML prediction.</p>
+                    <div class="component-points">
+                        <div class="component-point"><i class="fas fa-check"></i><span>District map and risk panel</span></div>
+                        <div class="component-point"><i class="fas fa-check"></i><span>Confidence and probability explanation</span></div>
+                    </div>
+                    <button class="component-action" type="button" onclick="navigateTo('/prediction-home')">
+                        <span>Open Prediction Module</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </article>
+
+                <article class="component-card" style="--accent: var(--red);">
+                    <div class="component-top">
+                        <div>
+                            <div class="component-icon"><i class="fas fa-microscope"></i></div>
+                        </div>
+                        <span class="component-status planned">Coming soon</span>
+                    </div>
+                    <h3 class="component-title">Dengue Mosquito Species Identification</h3>
+                    <p class="component-description">Entry point for AI-assisted mosquito species screening and classification workflows.</p>
+                    <div class="component-points">
+                        <div class="component-point"><i class="fas fa-check"></i><span>Prepared for image classification output</span></div>
+                        <div class="component-point"><i class="fas fa-check"></i><span>Supports vector surveillance decisions</span></div>
+                    </div>
+                    <button class="component-action secondary" type="button" onclick="showPending('Dengue Mosquito Species Identification')">
+                        <span>Open Component</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </article>
+
+                <article class="component-card" style="--accent: var(--green);">
+                    <div class="component-top">
+                        <div>
+                            <div class="component-icon"><i class="fas fa-route"></i></div>
+                        </div>
+                        <span class="component-status planned">Coming soon</span>
+                    </div>
+                    <h3 class="component-title">Optimal Resource Allocation & Hotspot Recommendation</h3>
+                    <p class="component-description">Reserved for the separate resource allocation and hotspot recommendation component from the team workflow.</p>
+                    <div class="component-points">
+                        <div class="component-point"><i class="fas fa-check"></i><span>Priority district recommendations</span></div>
+                        <div class="component-point"><i class="fas fa-check"></i><span>Predicted weekly case planning view</span></div>
+                    </div>
+                    <button class="component-action secondary" type="button" onclick="showPending('Optimal Resource Allocation & Hotspot Recommendation')">
+                        <span>Open Component</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span>© 2026 Dengue Prevention Research Framework</span>
+        <a href="/analytics">View system analytics</a>
+    </footer>
+
+    <div class="modal-backdrop" id="pending-modal" role="dialog" aria-modal="true" aria-labelledby="pending-title">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="pending-title">Component entry point ready</h2>
+                <button class="modal-close" type="button" onclick="closePending()" aria-label="Close"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="pending-message"></div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(path) {
+            window.location.href = path;
+        }
+
+        function showPending(componentName) {
+            document.getElementById('pending-message').textContent =
+                componentName + ' is shown on the main framework interface. Its separate module route is not connected in this project yet, so the existing prediction system remains unchanged.';
+            document.getElementById('pending-modal').classList.add('show');
+        }
+
+        function closePending() {
+            document.getElementById('pending-modal').classList.remove('show');
+        }
+
+        document.getElementById('pending-modal').addEventListener('click', function (event) {
+            if (event.target === this) {
+                closePending();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closePending();
+            }
+        });
+    </script>
+</body>
+</html>

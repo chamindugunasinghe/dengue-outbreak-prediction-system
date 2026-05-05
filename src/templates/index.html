@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dengue Risk Prediction</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <!-- Leaflet Search Plugin -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/2.9.10/leaflet-search.min.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background: #205474;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 73px;
+            background: rgba(10, 15, 18, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            padding: 16px 80px;
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1280px;
+            height: 40px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 25px;
+            color: #00F2FF;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 28px;
+            letter-spacing: -0.5px;
+            color: #FFFFFF;
+        }
+
+        .profile-container {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 9999px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 18px;
+            right: 80px;
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 217, 255, 0.25);
+            padding: 6px 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            z-index: 90;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 114px;
+            left: 67px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #FFFFFF;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 242, 255, 0.4);
+            transform: translateX(-5px);
+        }
+
+        .back-icon {
+            font-size: 20px;
+            color: #00F2FF;
+        }
+
+        .back-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            gap: 20px;
+            padding: 180px 80px 20px 67px;
+        }
+
+        .map-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .map-header {
+            padding: 20px 24px;
+            background: rgba(10, 15, 18, 0.9);
+            color: #FFFFFF;
+            position: relative;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .map-header-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #FFFFFF;
+        }
+
+        .map-header-title i {
+            font-size: 24px;
+        }
+
+        .map-header-subtitle {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #FFFFFF;
+            letter-spacing: 0.4px;
+            font-weight: 500;
+        }
+
+        #map {
+            flex: 1;
+            min-height: 400px;
+        }
+
+        .forecast-section {
+            flex: 0 0 380px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .forecast-header {
+            padding: 22px 24px;
+            background: rgba(10, 15, 18, 0.9);
+            color: #FFFFFF;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .forecast-header i {
+            font-size: 20px;
+        }
+
+        .forecast-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .forecast-item {
+            margin-bottom: 16px;
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .forecast-item:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .forecast-item.high-risk {
+            border-left: 4px solid #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .forecast-item.medium-risk {
+            border-left: 4px solid #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .forecast-item.low-risk {
+            border-left: 4px solid #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .forecast-date {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #000000;
+            font-size: 14px;
+            letter-spacing: -0.1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .forecast-date i {
+            color: #000000;
+        }
+
+        .forecast-risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 7px 16px;
+            border-radius: 24px;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+            letter-spacing: 0.3px;
+        }
+
+        .risk-high {
+            background: #dc3545;
+        }
+
+        .risk-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .risk-low {
+            background: #28a745;
+        }
+
+        .confidence-meter {
+            font-size: 11px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .confidence-bar {
+            background: #e9ecef;
+            height: 6px;
+            border-radius: 3px;
+            margin: 4px 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            transition: width 0.3s;
+        }
+
+        .confidence-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .confidence-label.high {
+            background: rgba(40, 167, 69, 0.14);
+            color: #1f7a38;
+        }
+
+        .confidence-label.medium {
+            background: rgba(255, 193, 7, 0.18);
+            color: #8a6500;
+        }
+
+        .confidence-label.low {
+            background: rgba(220, 53, 69, 0.12);
+            color: #a91f2d;
+        }
+
+        .probability-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 5px;
+            margin-top: 8px;
+            font-size: 11px;
+        }
+
+        .probability-row {
+            display: grid;
+            grid-template-columns: 52px 1fr 34px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .probability-track {
+            height: 6px;
+            border-radius: 999px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .case-source-card {
+            background: #f7fbfc;
+            border: 1px solid rgba(0, 195, 208, 0.28);
+            border-left: 4px solid #00C3D0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #1a2533;
+        }
+
+        .case-source-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: #0a5661;
+        }
+
+        .case-source-meta {
+            color: #52626d;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* Professional forecast panel refresh */
+        .forecast-section {
+            flex: 0 0 430px;
+            background: #f4f8fb;
+            border: 1px solid rgba(11, 50, 67, 0.16);
+            border-radius: 8px;
+            box-shadow: 0 18px 42px rgba(9, 24, 33, 0.22);
+        }
+
+        .forecast-header {
+            padding: 18px 20px;
+            background: #0b2633;
+            border-bottom: 1px solid rgba(0, 195, 208, 0.32);
+            align-items: flex-start;
+        }
+
+        .forecast-header-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 195, 208, 0.12);
+            border: 1px solid rgba(0, 195, 208, 0.28);
+            color: #00C3D0;
+            flex-shrink: 0;
+        }
+
+        .forecast-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0;
+            line-height: 24px;
+        }
+
+        .forecast-header-subtitle {
+            margin-top: 3px;
+            font-size: 12px;
+            line-height: 17px;
+            color: rgba(255, 255, 255, 0.68);
+            font-weight: 500;
+        }
+
+        .panel-toolbar {
+            display: none;
+            padding: 10px 16px;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(11, 50, 67, 0.1);
+        }
+
+        .panel-toolbar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #51616c;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .panel-update-button {
+            height: 30px;
+            padding: 0 11px;
+            border: none;
+            border-radius: 6px;
+            background: #007c89;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .panel-update-button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .forecast-content {
+            padding: 16px;
+            background: #eef4f7;
+        }
+
+        .forecast-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .forecast-content::-webkit-scrollbar-track {
+            background: #e3edf1;
+        }
+
+        .forecast-content::-webkit-scrollbar-thumb {
+            background: #a9c1ca;
+            border-radius: 999px;
+        }
+
+        .district-overview {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 14px;
+            background: #ffffff;
+            border: 1px solid rgba(11, 50, 67, 0.1);
+            border-radius: 8px;
+        }
+
+        .district-kicker {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #627582;
+        }
+
+        .district-title {
+            margin-top: 2px;
+            color: #102f3d;
+            font-size: 20px;
+            line-height: 26px;
+            font-weight: 800;
+        }
+
+        .model-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+            border-radius: 999px;
+            background: rgba(0, 124, 137, 0.1);
+            color: #075966;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+            max-width: 178px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: capitalize;
+        }
+
+        .cache-note {
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid rgba(11, 50, 67, 0.1);
+            color: #63727c;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .weekly-summary-card {
+            margin-bottom: 14px;
+            padding: 14px;
+            border-radius: 8px;
+            background: #102f3d;
+            color: #ffffff;
+            border: 1px solid rgba(0, 195, 208, 0.3);
+        }
+
+        .summary-label {
+            color: #70d7e0;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .summary-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .summary-risk-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .summary-risk-title {
+            font-size: 20px;
+            line-height: 24px;
+            font-weight: 800;
+        }
+
+        .summary-verdict {
+            margin-top: 3px;
+            font-size: 12px;
+            line-height: 17px;
+            color: rgba(255, 255, 255, 0.74);
+        }
+
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .summary-metric {
+            padding: 9px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .summary-metric-value {
+            font-size: 20px;
+            line-height: 22px;
+            font-weight: 800;
+        }
+
+        .summary-metric-label {
+            margin-top: 3px;
+            font-size: 10px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, 0.64);
+            font-weight: 700;
+        }
+
+        .summary-weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .summary-weather-item {
+            padding: 7px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .summary-weather-item strong {
+            color: #ffffff;
+        }
+
+        .forecast-list-heading {
+            margin: 14px 0 8px;
+            color: #334955;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .forecast-item {
+            margin-bottom: 10px;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(11, 50, 67, 0.1);
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(14, 38, 49, 0.06);
+            transform: none;
+        }
+
+        .forecast-item:hover {
+            transform: none;
+            box-shadow: 0 6px 18px rgba(14, 38, 49, 0.1);
+        }
+
+        .forecast-item.high-risk,
+        .forecast-item.medium-risk,
+        .forecast-item.low-risk {
+            background: #ffffff;
+        }
+
+        .forecast-item.high-risk {
+            border-left: 5px solid #dc3545;
+        }
+
+        .forecast-item.medium-risk {
+            border-left: 5px solid #d79b00;
+        }
+
+        .forecast-item.low-risk {
+            border-left: 5px solid #28a745;
+        }
+
+        .forecast-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .forecast-date {
+            margin-bottom: 0;
+            color: #163340;
+            font-size: 13px;
+            line-height: 18px;
+        }
+
+        .forecast-date i {
+            color: #007c89;
+        }
+
+        .forecast-risk-header {
+            margin: 0;
+            padding: 0;
+            border-bottom: none;
+            justify-content: flex-end;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .risk-badge {
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            box-shadow: none;
+            text-transform: uppercase;
+        }
+
+        .confidence-meter {
+            padding: 10px;
+            border-radius: 7px;
+            background: #f5f8fa;
+            border: 1px solid rgba(11, 50, 67, 0.08);
+            color: #4c5c66;
+        }
+
+        .confidence-summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            color: #2c3f49;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .confidence-note {
+            margin-top: 5px;
+            color: #667680;
+            font-size: 10px;
+            line-height: 14px;
+        }
+
+        .forecast-details {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(11, 50, 67, 0.1);
+            color: #1e3039;
+        }
+
+        .detail-item {
+            justify-content: space-between;
+            padding: 7px 8px;
+            border-radius: 6px;
+            background: #f7fafb;
+            min-width: 0;
+        }
+
+        .detail-label {
+            color: #52636d;
+            font-size: 11px;
+        }
+
+        .detail-label i {
+            color: #007c89;
+        }
+
+        .detail-value {
+            color: #132f3b;
+            font-size: 11px;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .temp-detail > span:not(.detail-label):not(.detail-value) {
+            display: none;
+        }
+
+        .forecast-details {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            font-size: 11px;
+            color: #1e3039;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(11, 50, 67, 0.1);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 7px 8px;
+            border-radius: 6px;
+            background: #f7fafb;
+            min-width: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #52636d;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .detail-label i {
+            color: #007c89;
+            font-size: 13px;
+        }
+
+        .moisture-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 10px;
+            color: white;
+            background: #17a2b8;
+            margin-left: 4px;
+        }
+
+        .xai-section {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .xai-toggle {
+            background: none;
+            border: none;
+            color: #000000;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .xai-toggle:hover {
+            color: #333333;
+        }
+
+        .xai-toggle i {
+            font-size: 14px;
+        }
+
+        .xai-content {
+            display: none;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+            font-size: 11px;
+            color: #000000;
+        }
+
+        /* Traveler Advice */
+        .advice-section {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .advice-toggle {
+            background: none;
+            border: none;
+            border-left: 3px solid #28a745;
+            padding: 4px 0 4px 8px;
+            color: #333;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .advice-toggle:hover {
+            color: #000;
+        }
+
+        .advice-content {
+            display: none;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 6px;
+        }
+
+        .advice-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .advice-list li {
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+
+        .xai-section,
+        .advice-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(11, 50, 67, 0.08);
+        }
+
+        .xai-toggle,
+        .advice-toggle {
+            width: 100%;
+            min-height: 34px;
+            justify-content: space-between;
+            padding: 7px 9px;
+            border: 1px solid rgba(11, 50, 67, 0.1);
+            border-radius: 6px;
+            background: #f7fafb;
+            color: #193542;
+            font-size: 11px;
+            font-weight: 800;
+            text-align: left;
+        }
+
+        .xai-toggle:hover,
+        .advice-toggle:hover {
+            color: #075966;
+            border-color: rgba(0, 124, 137, 0.28);
+            background: #eef7f8;
+        }
+
+        .xai-content,
+        .advice-content {
+            margin-top: 8px;
+            padding: 10px;
+            border: 1px solid rgba(11, 50, 67, 0.1);
+            border-radius: 6px;
+            background: #f7fafb;
+            color: #233a46;
+        }
+
+        .xai-content.show {
+            display: block;
+        }
+
+        .xai-summary {
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+
+        .xai-factor {
+            margin-bottom: 6px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #000000;
+        }
+
+        .xai-factor.increases {
+            border-left: 3px solid #dc3545;
+        }
+
+        .xai-factor.decreases {
+            border-left: 3px solid #28a745;
+        }
+
+        .xai-factor.moderate {
+            border-left: 3px solid #ffc107;
+        }
+
+        .xai-icon {
+            font-size: 16px;
+        }
+
+        .xai-info {
+            flex: 1;
+        }
+
+        .xai-factor-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .xai-factor-desc {
+            color: #666;
+            font-size: 10px;
+        }
+
+        .no-selection {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666666;
+            text-align: center;
+            padding: 32px;
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #000000;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #000000;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .location-name {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .leaflet-search-input {
+            width: 300px !important;
+            padding: 8px 12px !important;
+            border-radius: 5px !important;
+            border: 2px solid #000000 !important;
+            font-size: 14px !important;
+        }
+
+        .search-bar {
+            padding: 16px 20px;
+            background: linear-gradient(180deg, #f9fafb 0%, #eef2f6 100%);
+            border-bottom: 2px solid #e1e6ee;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 13px 16px;
+            border: 2px solid #d8e0ec;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.12), inset 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .search-button {
+            padding: 13px 22px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(44, 62, 80, 0.35);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(44, 62, 80, 0.25);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #8ca8c4;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lang-btn:hover {
+            color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .lang-btn.active {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00ffff;
+        }
+
+        /* Integrated framework theme refresh */
+        body {
+            color: #ffffff;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+                radial-gradient(circle at 18% 22%, rgba(0, 195, 208, 0.22), transparent 34%),
+                radial-gradient(circle at 88% 12%, rgba(45, 118, 183, 0.22), transparent 30%),
+                linear-gradient(135deg, #071820 0%, #123443 48%, #0b2633 100%);
+            background-size: 72px 72px, 72px 72px, auto, auto, auto;
+        }
+
+        .top-header {
+            height: 72px;
+            padding: 16px max(24px, calc((100vw - 1180px) / 2));
+            background: rgba(7, 24, 32, 0.84);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-container {
+            max-width: 1180px;
+        }
+
+        .logo-container {
+            min-width: 0;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 195, 208, 0.13);
+            border: 1px solid rgba(0, 195, 208, 0.32);
+            color: #00c3d0;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .profile-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        .language-switcher {
+            top: 18px;
+            right: max(24px, calc((100vw - 1180px) / 2));
+            border-radius: 999px;
+            background: rgba(7, 24, 32, 0.74);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+        }
+
+        .back-button {
+            top: 92px;
+            left: max(24px, calc((100vw - 1180px) / 2));
+            min-height: 36px;
+            padding: 0 12px;
+            gap: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.86);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.13);
+            border-color: rgba(0, 195, 208, 0.34);
+            transform: translateX(-3px);
+        }
+
+        .back-icon {
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .back-text {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .container {
+            gap: 18px;
+            padding: 150px max(24px, calc((100vw - 1180px) / 2)) 28px;
+        }
+
+        .map-section,
+        .forecast-section {
+            border-radius: 8px;
+            border: 1px solid rgba(11, 50, 67, 0.16);
+            box-shadow: 0 18px 44px rgba(2, 15, 22, 0.24);
+        }
+
+        .map-header,
+        .forecast-header {
+            background: #0b2633;
+            border-bottom: 1px solid rgba(0, 195, 208, 0.32);
+        }
+
+        .map-header-title,
+        .forecast-header-title {
+            color: #ffffff;
+            letter-spacing: 0;
+        }
+
+        .map-header-subtitle,
+        .forecast-header-subtitle {
+            color: rgba(255, 255, 255, 0.68);
+        }
+
+        .search-bar {
+            background: #ffffff;
+            border-bottom: 1px solid rgba(11, 50, 67, 0.1);
+        }
+
+        .search-input {
+            border: 1px solid rgba(11, 50, 67, 0.18);
+            border-radius: 6px;
+            box-shadow: none;
+        }
+
+        .search-input:focus {
+            border-color: #007c89;
+            box-shadow: 0 0 0 4px rgba(0, 124, 137, 0.12);
+        }
+
+        .search-button {
+            border-radius: 6px;
+            background: #007c89;
+            box-shadow: none;
+        }
+
+        .search-button:hover {
+            box-shadow: 0 8px 18px rgba(0, 124, 137, 0.24);
+        }
+
+        @media (max-width: 1100px) {
+            body {
+                min-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .top-header {
+                padding: 16px 24px;
+            }
+
+            .language-switcher {
+                right: 24px;
+            }
+
+            .back-button {
+                left: 24px;
+            }
+
+            .container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                padding: 176px 24px 24px;
+            }
+
+            .map-section {
+                min-height: 520px;
+            }
+
+            .forecast-section {
+                flex: none;
+                width: 100%;
+                min-height: 540px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Header -->
+<div class="top-header">
+    <div class="header-container">
+        <div class="logo-container">
+            <div class="logo-text">DengueOutbreak</div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+<a href="/prediction-home" class="back-button">
+    <i class="fas fa-arrow-left back-icon"></i>
+    <span class="back-text" data-i18n="back_btn">Back</span>
+</a>
+
+<!-- Language Switcher -->
+<div class="language-switcher">
+    <button class="lang-btn active" id="lang-en" onclick="setLanguage('en')">EN</button>
+    <button class="lang-btn" id="lang-si" onclick="setLanguage('si')">SI</button>
+</div>
+
+<div class="container">
+    <div class="map-section">
+        <div class="map-header">
+            <div class="map-header-title"><i class="fas fa-map-marked-alt"></i> <span data-i18n="title">District Explorer</span></div>
+            <div class="map-header-subtitle" data-i18n="subtitle">Search or click a district to view risk</div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="district-search" placeholder="Search district..." list="district-list" class="search-input" data-i18n-placeholder="search_placeholder">
+            <datalist id="district-list"></datalist>
+            <button onclick="searchDistrict()" class="search-button" data-i18n="search_btn">Search</button>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <div class="forecast-section">
+        <div class="forecast-header">
+            <div class="forecast-header-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+                <div class="forecast-header-title" data-i18n="forecast_title">7-Day Dengue Risk Forecast</div>
+                <div class="forecast-header-subtitle">District-level model output with official case context</div>
+            </div>
+        </div>
+        <div id="cache-info" class="panel-toolbar">
+            <div class="panel-toolbar-row">
+                <span id="cache-status" class="data-chip" data-i18n="cached_data"><i class="fas fa-database"></i> Cached data</span>
+                <button id="refresh-btn" onclick="manualUpdate()" class="panel-update-button" data-i18n="refresh_btn">Update</button>
+            </div>
+        </div>
+        <div class="forecast-content">
+            <div class="no-selection" id="no-selection-msg" data-i18n="no_selection">
+                Click on a location or search to see forecasts
+            </div>
+            <div id="forecast-list" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Leaflet Search Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-search/2.9.10/leaflet-search.min.js"></script>
+
+<script>
+    // ===== LANGUAGE SUPPORT =====
+    const translations = {
+        en: {
+            back_btn: 'Back',
+            title: 'District Explorer',
+            subtitle: 'Search or click a district to view risk',
+            search_placeholder: 'Search district...',
+            search_btn: 'Search',
+            forecast_title: '7-Day Dengue Risk Forecast',
+            low_risk: 'Low Risk',
+            medium_risk: 'Medium Risk',
+            high_risk: 'High Risk',
+            temp: 'Temperature',
+            rain: 'Rainfall',
+            wind: 'Wind Speed',
+            humidity: 'Humidity',
+            cached_data: 'Cached data',
+            refresh_btn: 'Update',
+            no_selection: 'Click on a location or search to see forecasts',
+            why_risk: 'Why this risk level?',
+            confidence: 'Confidence',
+            probability_split: 'Probability split',
+            official_cases: 'Official dengue cases',
+            historical_cases: 'Historical case profile',
+            day: 'Day',
+            high_intensity: 'High',
+            moderate_intensity: 'Moderate',
+            low_intensity: 'Low',
+            calm_intensity: 'Calm',
+            strong_intensity: 'Strong'
+        },
+        si: {
+            back_btn: 'ආපසු',
+            title: 'දිස්ත්‍රික්ක ගවේෂකය',
+            subtitle: 'අවදානම දැකීමට දිස්ත්‍රික්කයක් සොයන්න හෝ ක්ලික් කරන්න',
+            search_placeholder: 'දිස්ත්‍රික්කයක් සොයන්න...',
+            search_btn: 'සොයන්න',
+            forecast_title: '7-දින ඩෙංගු අවදානම් පුරෝකථනය',
+            low_risk: 'අඩු අවදානම',
+            medium_risk: 'මධ්‍ය අවදානම',
+            high_risk: 'ඉහළ අවදානම',
+            temp: 'උෂ්ණත්වය',
+            rain: 'වර්ষාපතනය',
+            wind: 'සුළං වේගය',
+            humidity: 'ආර්ද්‍රතාව',
+            cached_data: 'කෑෂ් කළ දත්ත',
+            refresh_btn: 'යාවත්කාල කරන්න',
+            no_selection: 'පුරෝකථනය දැකීමට ස්ථානයක ක්ලික් කරන්න හෝ සොයන්න',
+            why_risk: 'මෙම අවදානම් මට්ටම ඇයි?',
+            day: 'දිනය',
+            high_intensity: 'ඉහළ',
+            moderate_intensity: 'මධ්‍යම',
+            low_intensity: 'අඩු',
+            calm_intensity: 'සන්සුන්',
+            strong_intensity: 'ප්‍රබල'
+        }
+    };
+
+    let currentLanguage = localStorage.getItem('dengue_language') || 'en';
+    let currentForecastData = null;
+
+    function setLanguage(lang) {
+        console.log('Language switching to:', lang);
+        currentLanguage = lang;
+        localStorage.setItem('dengue_language', lang);
+        updatePageLanguage();
+        // Re-render current forecast if exists
+        if (currentForecastData) {
+            displayForecast(currentForecastData);
+        }
+        console.log('Language switched successfully to:', lang);
+    }
+
+    function updatePageLanguage() {
+        console.log('Updating page language to:', currentLanguage);
+        console.log('Translations object exists:', !!translations);
+        console.log('Current language translations:', translations[currentLanguage]);
+        
+        // Update data-i18n elements
+        const i18nElements = document.querySelectorAll('[data-i18n]');
+        console.log('Found', i18nElements.length, 'elements with data-i18n');
+        i18nElements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const translation = translations[currentLanguage]?.[key] || translations.en?.[key];
+            console.log('Translating', key, 'to:', translation);
+            if (translation) {
+                el.textContent = translation;
+            } else {
+                console.warn('No translation found for key:', key);
+            }
+        });
+
+        // Update placeholder attributes
+        const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+        console.log('Found', placeholderElements.length, 'elements with data-i18n-placeholder');
+        placeholderElements.forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            const translation = translations[currentLanguage]?.[key] || translations.en?.[key];
+            console.log('Translating placeholder', key, 'to:', translation);
+            if (translation) {
+                el.placeholder = translation;
+            } else {
+                console.warn('No placeholder translation found for key:', key);
+            }
+        });
+
+        // Update language toggle button styling
+        console.log('Updating button active states for:', currentLanguage);
+        const enBtn = document.getElementById('lang-en');
+        const siBtn = document.getElementById('lang-si');
+        if (enBtn && siBtn) {
+            enBtn.classList.toggle('active', currentLanguage === 'en');
+            siBtn.classList.toggle('active', currentLanguage === 'si');
+            console.log('Button states updated - EN active:', enBtn.classList.contains('active'), 'SI active:', siBtn.classList.contains('active'));
+        } else {
+            console.error('Language buttons not found!');
+        }
+        console.log('Page language update complete');
+    }
+
+    function t(key) {
+        return translations[currentLanguage][key] || translations.en[key];
+    }
+
+    // Initialize map
+    const map = L.map('map').setView([7.5, 80.5], 8);
+
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Get districts from server
+    const districts = {{ districts | safe }};
+    let markers = {};
+    let districtForecasts = {};
+
+    // Load cache stats on page load
+    loadCacheStats();
+
+    // Populate district search list
+    const districtList = document.getElementById('district-list');
+    Object.keys(districts).forEach(districtName => {
+        const option = document.createElement('option');
+        option.value = districtName;
+        districtList.appendChild(option);
+    });
+
+    function loadCacheStats() {
+        fetch('/api/cache-stats')
+            .then(r => r.json())
+            .then(data => {
+                const statusEl = document.getElementById('cache-status');
+                if (data.cached_districts > 0) {
+                    const lastUpdate = new Date(data.last_update);
+                    const timeAgo = getTimeAgo(lastUpdate);
+                    statusEl.innerHTML = `<i class="fas fa-database"></i> ${data.cached_districts}/${data.total_districts} cached (${timeAgo})`;
+                    document.getElementById('cache-info').style.display = 'block';
+                }
+            })
+            .catch(e => console.log('Cache stats unavailable'));
+    }
+
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 60) return 'just now';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        return `${days}d ago`;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[char]));
+    }
+
+    function renderCaseContext(context) {
+        if (!context) return '';
+
+        if (context.source === 'official') {
+            const week = context.report_week ? `Week ${context.report_week}, ${context.report_year}` : 'Latest WER';
+            const previous = context.previous_week_cases != null
+                ? ` | Previous imported week: ${Number(context.previous_week_cases).toLocaleString()}`
+                : '';
+            const cumulative = context.cumulative_cases != null
+                ? ` | YTD: ${Number(context.cumulative_cases).toLocaleString()}`
+                : '';
+            const sourceLink = context.source_url
+                ? ` | <a href="${escapeHtml(context.source_url)}" target="_blank" rel="noopener">source</a>`
+                : '';
+
+            return `
+                <div class="case-source-card">
+                    <div class="case-source-title"><i class="fas fa-notes-medical"></i> ${t('official_cases')}</div>
+                    <div><strong>${Number(context.current_week_cases || 0).toLocaleString()}</strong> cases reported for ${escapeHtml(week)}</div>
+                    <div class="case-source-meta">${escapeHtml(context.source_name || 'Official report')}${previous}${cumulative}${sourceLink}</div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="case-source-card">
+                <div class="case-source-title"><i class="fas fa-chart-line"></i> ${t('historical_cases')}</div>
+                <div><strong>${Number(context.seasonal_mean_cases || 0).toLocaleString()}</strong> average cases/week for this district season</div>
+                <div class="case-source-meta">Official live cases are not imported yet, so the model is using historical seasonal context.</div>
+            </div>
+        `;
+    }
+
+    function renderProbabilitySplit(probabilities) {
+        const rows = [
+            { key: 'low', label: 'Low', color: '#28a745' },
+            { key: 'medium', label: 'Medium', color: '#ffc107' },
+            { key: 'high', label: 'High', color: '#dc3545' }
+        ];
+
+        return `
+            <div class="probability-grid" aria-label="${t('probability_split')}">
+                ${rows.map(row => {
+                    const value = Number(probabilities?.[row.key] ?? 0);
+                    return `
+                        <div class="probability-row">
+                            <span>${row.label}</span>
+                            <span class="probability-track">
+                                <span class="probability-fill" style="width:${value}%; background:${row.color};"></span>
+                            </span>
+                            <strong>${value}%</strong>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function manualUpdate() {
+        const btn = document.getElementById('refresh-btn');
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+        
+        fetch('/api/update-now', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Updated';
+                setTimeout(() => {
+                    btn.textContent = 'Update';
+                    btn.disabled = false;
+                    loadCacheStats();
+                }, 2000);
+            })
+            .catch(e => {
+                btn.textContent = 'Error';
+                btn.disabled = false;
+            });
+    }
+
+    function searchDistrict() {
+        const searchInput = document.getElementById('district-search');
+        const searchValue = searchInput.value.trim().toLowerCase();
+        
+        if (!searchValue) {
+            alert('Please enter a district name');
+            return;
+        }
+        
+        // Find matching district
+        const matchedDistrict = Object.keys(districts).find(
+            name => name.toLowerCase().includes(searchValue)
+        );
+        
+        if (matchedDistrict) {
+            const coords = districts[matchedDistrict];
+            map.setView([coords.lat, coords.lng], 11);
+            // Trigger the click on the marker to get forecast and highlight
+            setTimeout(() => {
+                getForecast(coords.lat, coords.lng, matchedDistrict);
+            }, 300);
+            // Keep the search value showing the district name found
+            searchInput.value = matchedDistrict;
+        } else {
+            alert(`District "${searchInput.value}" not found. Try again!`);
+            searchInput.focus();
+        }
+    }
+
+    // Allow searching with Enter key
+    document.getElementById('district-search')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchDistrict();
+    });
+
+    // Blue dots removed - use search/autocomplete to select districts
+    Object.keys(districts).forEach(districtName => {
+        const coords = districts[districtName];
+        markers[districtName] = coords;
+    });
+    
+    // Store current selected district marker
+    let selectedDistrictMarker = null;
+
+    // Function to fetch forecast
+    function getForecast(lat, lng, districtName) {
+        const forecastList = document.getElementById('forecast-list');
+        const noSelectionMsg = document.getElementById('no-selection-msg');
+        
+        // Show loading state
+        forecastList.innerHTML = '<div class="loading"><div class="spinner"></div> Loading forecast...</div>';
+        forecastList.style.display = 'block';
+        noSelectionMsg.style.display = 'none';
+
+        fetch('/api/forecast', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                lat: lat,
+                lng: lng,
+                district: districtName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayForecast(data);
+                districtForecasts[districtName] = data;
+                
+                // Show district on map with risk color
+                if (selectedDistrictMarker) {
+                    map.removeLayer(selectedDistrictMarker);
+                }
+                
+                const highestRisk = Math.max(...data.forecasts.map(f => f.risk_score));
+                const riskColor = {0: '#28a745', 1: '#ffc107', 2: '#dc3545'}[highestRisk];
+                const riskLabel = {0: 'Low Risk', 1: 'Medium Risk', 2: 'High Risk'}[highestRisk];
+                
+                selectedDistrictMarker = L.circleMarker([lat, lng], {
+                    radius: 15,
+                    fillColor: riskColor,
+                    color: '#fff',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).bindPopup(`<strong>${districtName}</strong><br>${riskLabel}`).addTo(map);
+                
+                map.setView([lat, lng], 11);
+            } else {
+                forecastList.innerHTML = `<div class="no-selection">Error: ${data.error}</div>`;
+            }
+        })
+        .catch(error => {
+            forecastList.innerHTML = `<div class="no-selection">Error: ${error.message}</div>`;
+        });
+    }
+
+    // Function to display forecast
+    function displayForecast(data) {
+        currentForecastData = data;
+        const forecastList = document.getElementById('forecast-list');
+
+        // ── DISTRICT HEADER ───────────────────────────────────────────────
+        const modelVersion = data.forecasts?.[0]?.model_version || 'validated model';
+        const displayModelVersion = modelVersion.replace(/_/g, ' ');
+        let html = `
+            <div class="district-overview">
+                <div>
+                    <div class="district-kicker">Selected district</div>
+                    <div class="district-title">${escapeHtml(data.district)}</div>
+                </div>
+                <div class="model-chip"><i class="fas fa-shield-halved"></i> ${escapeHtml(displayModelVersion)}</div>
+            </div>
+        `;
+
+        if (data.cached) {
+            html += `<div class="cache-note"><i class="fas fa-database"></i> ${t('cached_data')}</div>`;
+        }
+
+        // ── WEEKLY TRAVEL SUMMARY CARD ────────────────────────────────────
+        const caseContext = data.case_context || data.weekly_summary?.case_context || data.forecasts?.[0]?.case_context;
+        html += renderCaseContext(caseContext);
+
+        const summary = data.weekly_summary;
+        if (summary) {
+            const riskIconClass = summary.overall_risk === 0 ? 'fa-circle-check' : (summary.overall_risk === 1 ? 'fa-circle-exclamation' : 'fa-triangle-exclamation');
+            html += `
+            <div class="weekly-summary-card">
+                <div class="summary-label">7-day risk summary</div>
+                <div class="summary-main">
+                    <div class="summary-risk-icon" style="background:${summary.overall_color};"><i class="fas ${riskIconClass}"></i></div>
+                    <div>
+                        <div class="summary-risk-title" style="color:${summary.overall_color};">${summary.overall_label} Risk</div>
+                        <div class="summary-verdict">${escapeHtml(summary.travel_verdict)}</div>
+                    </div>
+                </div>
+                <div class="summary-metrics">
+                    <div class="summary-metric">
+                        <div class="summary-metric-value" style="color:#ff6b7a;">${summary.high_days}</div>
+                        <div class="summary-metric-label">High days</div>
+                    </div>
+                    <div class="summary-metric">
+                        <div class="summary-metric-value" style="color:#ffd54f;">${summary.medium_days}</div>
+                        <div class="summary-metric-label">Medium days</div>
+                    </div>
+                    <div class="summary-metric">
+                        <div class="summary-metric-value" style="color:#69e08a;">${summary.low_days}</div>
+                        <div class="summary-metric-label">Low days</div>
+                    </div>
+                </div>
+                <div class="summary-weather-grid">
+                    <div class="summary-weather-item">Avg temp <strong>${summary.avg_temp}&deg;C</strong></div>
+                    <div class="summary-weather-item">Total rain <strong>${summary.total_rainfall}mm</strong></div>
+                </div>
+            </div>`;
+        }
+
+        if (false && summary) {
+            const riskIcon = summary.overall_risk === 0 ? '✓' : (summary.overall_risk === 1 ? '!' : '⚠️');
+            html += `
+            <div style="background:linear-gradient(135deg,#1a3a4a 0%,#2c5364 100%); border-radius:12px; padding:16px; margin-bottom:16px; color:white; border:1px solid rgba(0,195,208,0.3);">
+                <div style="font-size:11px; font-weight:700; color:#00C3D0; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">7-Day Travel Risk Summary</div>
+                <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+                    <div style="width:54px; height:54px; border-radius:50%; background:${summary.overall_color}; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.3);">${riskIcon}</div>
+                    <div>
+                        <div style="font-size:20px; font-weight:800; color:${summary.overall_color}; line-height:1.1;">${summary.overall_label} Risk</div>
+                        <div style="font-size:12px; opacity:0.85; margin-top:3px;">${summary.travel_verdict}</div>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:11px; text-align:center; margin-bottom:10px;">
+                    <div style="background:rgba(220,53,69,0.25); border-radius:8px; padding:8px 4px;">
+                        <div style="font-weight:800; font-size:22px; color:#ff6b7a; line-height:1;">${summary.high_days}</div>
+                        <div style="opacity:0.8; margin-top:2px;">High Days</div>
+                    </div>
+                    <div style="background:rgba(255,193,7,0.25); border-radius:8px; padding:8px 4px;">
+                        <div style="font-weight:800; font-size:22px; color:#ffd54f; line-height:1;">${summary.medium_days}</div>
+                        <div style="opacity:0.8; margin-top:2px;">Med Days</div>
+                    </div>
+                    <div style="background:rgba(40,167,69,0.25); border-radius:8px; padding:8px 4px;">
+                        <div style="font-weight:800; font-size:22px; color:#69e08a; line-height:1;">${summary.low_days}</div>
+                        <div style="opacity:0.8; margin-top:2px;">Low Days</div>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px;">
+                    <div style="background:rgba(255,255,255,0.08); border-radius:6px; padding:6px 8px;"><span style="opacity:0.7;">Avg Temp:</span> <strong>${summary.avg_temp}°C</strong></div>
+                    <div style="background:rgba(255,255,255,0.08); border-radius:6px; padding:6px 8px;"><span style="opacity:0.7;">Total Rain:</span> <strong>${summary.total_rainfall}mm</strong></div>
+                </div>
+            </div>`;
+        }
+
+        // ── PER-DAY FORECAST CARDS ────────────────────────────────────────
+        html += `<div class="forecast-list-heading">Daily forecast</div>`;
+        data.forecasts.forEach((forecast, index) => {
+            const riskScore = forecast.risk_score;
+            const riskClass = ['low', 'medium', 'high'][riskScore] + '-risk';
+            const badgeClass = 'risk-' + ['low', 'medium', 'high'][riskScore];
+
+            let riskLevelText = forecast.risk_level;
+            if (forecast.risk_level === 'Low') riskLevelText = t('low_risk');
+            else if (forecast.risk_level === 'Medium') riskLevelText = t('medium_risk');
+            else if (forecast.risk_level === 'High') riskLevelText = t('high_risk');
+
+            const confidence = forecast.confidence || 65;
+            const confidenceLevel = forecast.confidence_level || 'medium';
+            const confidenceLabel = forecast.confidence_label || 'Medium confidence';
+            const confidenceNote = forecast.confidence_note || '';
+            const displayPrecipProb = (forecast.precip_probability != null) ? forecast.precip_probability + '%' : '--';
+            const displayUvIndex = (forecast.uv_index != null) ? forecast.uv_index : '--';
+            const precipProb = (forecast.precip_probability != null) ? forecast.precip_probability + '%' : '—';
+            const uvIndex = (forecast.uv_index != null) ? forecast.uv_index : '—';
+
+            html += `
+            <div class="forecast-item ${riskClass}">
+                <div class="forecast-card-top">
+                    <div class="forecast-date"><i class="fas fa-calendar-day"></i> ${t('day')} ${forecast.day}: ${forecast.date}</div>
+                    <div class="forecast-risk-header">
+                        <span class="risk-badge ${badgeClass}">${riskLevelText}</span>
+                        <span class="confidence-label ${confidenceLevel}">${escapeHtml(confidenceLabel)}</span>
+                    </div>
+                </div>
+                <div class="confidence-meter">
+                    <div class="confidence-summary-row">
+                        <span>${t('confidence')}: <strong>${confidence}%</strong></span>
+                        <span>Margin: ${forecast.confidence_margin ?? 0}%</span>
+                    </div>
+                    <div class="confidence-bar"><div class="confidence-fill" style="width:${confidence}%; background:${forecast.risk_color};"></div></div>
+                    <div class="confidence-note">${escapeHtml(confidenceNote)}</div>
+                    ${renderProbabilitySplit(forecast.probabilities)}
+                </div>
+                <div class="forecast-details">
+                    <div class="detail-item temp-detail">
+                        <span class="detail-label"><i class="fas fa-thermometer-half"></i> ${t('temp')}:</span>
+                        <span class="detail-value">${forecast.min_temp}&deg;-${forecast.max_temp}&deg;C</span>
+                        <span>${forecast.min_temp}°–${forecast.max_temp}°C</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label"><i class="fas fa-cloud-rain"></i> ${t('rain')}:</span>
+                        <span class="detail-value">${forecast.rainfall}mm</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label"><i class="fas fa-wind"></i> ${t('wind')}:</span>
+                        <span class="detail-value">${forecast.wind} km/h</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label"><i class="fas fa-cloud-showers-heavy"></i> Rain Chance:</span>
+                        <span class="detail-value">${displayPrecipProb}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label"><i class="fas fa-sun"></i> UV Index:</span>
+                        <span class="detail-value">${displayUvIndex}</span>
+                    </div>
+                </div>`;
+
+            // XAI — Why this risk?
+            if (forecast.explanation) {
+                html += `
+                <div class="xai-section">
+                    <button class="xai-toggle" onclick="togglePanel('xai-${index}', this)">
+                        <i class="fas fa-microscope"></i> ${t('why_risk')} <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i>
+                    </button>
+                    <div class="xai-content" id="xai-${index}">
+                        <div class="xai-summary">${forecast.explanation.summary}</div>
+                        <div class="xai-factors">
+                            ${forecast.explanation.factors.map(f => `
+                            <div class="xai-factor ${f.impact}">
+                                <span class="xai-icon">${f.icon}</span>
+                                <div class="xai-info">
+                                    <div class="xai-factor-name">${f.factor}: <span style="font-weight:400;">${f.value}</span></div>
+                                    <div class="xai-factor-desc">${f.description}</div>
+                                </div>
+                                <span style="font-size:10px; text-transform:uppercase; font-weight:700; opacity:0.75; flex-shrink:0; margin-left:4px;">${f.impact}</span>
+                            </div>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            // Traveler Advice
+            if (forecast.traveler_advice) {
+                const adv = forecast.traveler_advice;
+                html += `
+                <div class="advice-section">
+                    <button class="advice-toggle" onclick="togglePanel('adv-${index}', this)">
+                        <i class="fas fa-shield-alt" style="color:${adv.color};"></i> Travel Advice <i class="fas fa-chevron-down" style="font-size:10px; margin-left:4px;"></i>
+                    </button>
+                    <div class="advice-content" id="adv-${index}">
+                        <div style="font-weight:600; margin-bottom:6px; color:${adv.color}; font-size:12px;">${adv.headline}</div>
+                        <ul class="advice-list">
+                            ${adv.tips.map(tip => `<li><i class="fas fa-check-circle" style="color:${adv.color}; margin-right:5px;"></i>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>`;
+            }
+
+            html += `</div>`;
+        });
+
+        forecastList.innerHTML = html;
+    }
+
+    function toggleXAI(index) {
+        togglePanel('xai-' + index, null);
+    }
+
+    function togglePanel(id, btn) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const isHidden = el.style.display === 'none' || el.style.display === '';
+        el.style.display = isHidden ? 'block' : 'none';
+        if (btn) {
+            const chevron = btn.querySelector('.fa-chevron-down, .fa-chevron-up');
+            if (chevron) chevron.className = isHidden ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+        }
+    }
+
+    // Search functionality
+    // Create hidden markers for search functionality
+    const searchMarkers = {};
+    Object.keys(districts).forEach(districtName => {
+        const coords = districts[districtName];
+        const marker = L.circleMarker([coords.lat, coords.lng], {
+            radius: 0,
+            fillOpacity: 0,
+            opacity: 0
+        });
+        marker.bindPopup(districtName);
+        searchMarkers[districtName] = marker;
+        markers[districtName] = marker; // Update markers reference
+    });
+
+    const searchLayer = L.layerGroup(Object.values(searchMarkers)).addTo(map);
+
+    const searchControl = new L.Control.Search({
+        position: 'topleft',
+        layer: searchLayer,
+        initial: false,
+        zoom: 11,
+        textDelay: 250,
+        textPlaceHolder: 'Search districts...',
+        propertyName: 'bindPopup'
+    });
+
+    map.addControl(searchControl);
+
+    // Handle search selection
+    searchControl.on('search:locationfound', (e) => {
+        // Find district name from the popup or latlng
+        const districtName = Object.keys(districts).find(
+            name => Math.abs(districts[name].lat - e.latlng.lat) < 0.01 && 
+                    Math.abs(districts[name].lng - e.latlng.lng) < 0.01
+        );
+        
+        if (districtName && districts[districtName]) {
+            const coords = districts[districtName];
+            getForecast(coords.lat, coords.lng, districtName);
+        }
+    });
+
+    // Initialize language on page load (must be at end after all DOM elements are available)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Dashboard loaded (DOMContentLoaded), initializing language from localStorage:', currentLanguage);
+            updatePageLanguage();
+        });
+    } else {
+        // DOM already loaded
+        console.log('Dashboard already loaded, initializing language immediately:', currentLanguage);
+        updatePageLanguage();
+    }
+
+</script>
+
+</body>
+</html>

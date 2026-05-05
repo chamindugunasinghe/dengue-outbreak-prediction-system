@@ -1,0 +1,376 @@
+{
+  "generated_at": "2026-05-05T03:15:19.459931",
+  "model_path": "models\\dengue_model_real_world_validated.pkl",
+  "predictions_path": "results\\real_world_predictions_2025_2026.csv",
+  "train_data": {
+    "path": "data\\dengue_data.csv",
+    "years": [
+      2007,
+      2024
+    ],
+    "rows": 22950
+  },
+  "test_data": {
+    "path": "data\\test_2025_2026_real.csv",
+    "years": [
+      2025,
+      2026
+    ],
+    "weeks": 58,
+    "rows": 1450,
+    "districts": 25
+  },
+  "risk_thresholds": {
+    "low": "0-3 cases/week",
+    "medium": "4-9 cases/week",
+    "high": "10+ cases/week"
+  },
+  "feature_names": [
+    "District_Encoded",
+    "Month",
+    "Week",
+    "Avg Max Temp (\u00b0C)",
+    "Avg Min Temp (\u00b0C)",
+    "Total Precipitation (mm)",
+    "Avg Wind Speed (km/h)",
+    "last_week_cases",
+    "last_2_weeks_cases",
+    "temp_range",
+    "avg_temp",
+    "rain_temp_interaction",
+    "is_monsoon",
+    "cases_3week_avg",
+    "case_trend"
+  ],
+  "district_encoding": {
+    "Ampara": 0,
+    "Anuradhapura": 1,
+    "Badulla": 2,
+    "Batticaloa": 3,
+    "Colombo": 4,
+    "Galle": 5,
+    "Gampaha": 6,
+    "Hambantota": 7,
+    "Jaffna": 8,
+    "Kalutara": 9,
+    "Kandy": 10,
+    "Kegalle": 11,
+    "Kilinochchi": 12,
+    "Kurunegala": 13,
+    "Mannar": 14,
+    "Matale": 15,
+    "Matara": 16,
+    "Monaragala": 17,
+    "Mullaitivu": 18,
+    "NuwaraEliya": 19,
+    "Polonnaruwa": 20,
+    "Puttalam": 21,
+    "Ratnapura": 22,
+    "Trincomalee": 23,
+    "Vavuniya": 24
+  },
+  "metrics": {
+    "accuracy": 0.8214,
+    "balanced_accuracy": 0.7587,
+    "macro_f1": 0.7348,
+    "weighted_f1": 0.8338,
+    "average_confidence": 0.8223,
+    "average_confidence_when_correct": 0.8618,
+    "average_confidence_when_wrong": 0.6406,
+    "high_risk_recall": 0.8731,
+    "high_risk_precision": 0.9636,
+    "by_class": {
+      "low": {
+        "precision": 0.7714,
+        "recall": 0.8077,
+        "f1": 0.7891,
+        "support": 234
+      },
+      "medium": {
+        "precision": 0.4295,
+        "recall": 0.5953,
+        "f1": 0.499,
+        "support": 215
+      },
+      "high": {
+        "precision": 0.9636,
+        "recall": 0.8731,
+        "f1": 0.9161,
+        "support": 1001
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "matrix": [
+        [
+          189,
+          45,
+          0
+        ],
+        [
+          54,
+          128,
+          33
+        ],
+        [
+          2,
+          125,
+          874
+        ]
+      ]
+    },
+    "district_metrics": [
+      {
+        "district": "Polonnaruwa",
+        "accuracy": 0.5172,
+        "weeks": 58,
+        "actual_high_weeks": 24,
+        "missed_high_weeks": 17
+      },
+      {
+        "district": "Monaragala",
+        "accuracy": 0.6724,
+        "weeks": 58,
+        "actual_high_weeks": 50,
+        "missed_high_weeks": 15
+      },
+      {
+        "district": "Puttalam",
+        "accuracy": 0.6897,
+        "weeks": 58,
+        "actual_high_weeks": 44,
+        "missed_high_weeks": 15
+      },
+      {
+        "district": "Badulla",
+        "accuracy": 0.6897,
+        "weeks": 58,
+        "actual_high_weeks": 46,
+        "missed_high_weeks": 12
+      },
+      {
+        "district": "Hambantota",
+        "accuracy": 0.7414,
+        "weeks": 58,
+        "actual_high_weeks": 52,
+        "missed_high_weeks": 12
+      },
+      {
+        "district": "Ampara",
+        "accuracy": 0.5,
+        "weeks": 58,
+        "actual_high_weeks": 13,
+        "missed_high_weeks": 11
+      },
+      {
+        "district": "Anuradhapura",
+        "accuracy": 0.6034,
+        "weeks": 58,
+        "actual_high_weeks": 32,
+        "missed_high_weeks": 11
+      },
+      {
+        "district": "NuwaraEliya",
+        "accuracy": 0.6379,
+        "weeks": 58,
+        "actual_high_weeks": 12,
+        "missed_high_weeks": 10
+      },
+      {
+        "district": "Trincomalee",
+        "accuracy": 0.7414,
+        "weeks": 58,
+        "actual_high_weeks": 41,
+        "missed_high_weeks": 5
+      },
+      {
+        "district": "Jaffna",
+        "accuracy": 0.8621,
+        "weeks": 58,
+        "actual_high_weeks": 55,
+        "missed_high_weeks": 5
+      },
+      {
+        "district": "Batticaloa",
+        "accuracy": 0.9138,
+        "weeks": 58,
+        "actual_high_weeks": 49,
+        "missed_high_weeks": 4
+      },
+      {
+        "district": "Mannar",
+        "accuracy": 0.6724,
+        "weeks": 58,
+        "actual_high_weeks": 5,
+        "missed_high_weeks": 3
+      },
+      {
+        "district": "Matale",
+        "accuracy": 0.931,
+        "weeks": 58,
+        "actual_high_weeks": 57,
+        "missed_high_weeks": 3
+      },
+      {
+        "district": "Matara",
+        "accuracy": 0.9655,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 2
+      },
+      {
+        "district": "Kilinochchi",
+        "accuracy": 0.7414,
+        "weeks": 58,
+        "actual_high_weeks": 1,
+        "missed_high_weeks": 1
+      },
+      {
+        "district": "Kurunegala",
+        "accuracy": 0.9483,
+        "weeks": 58,
+        "actual_high_weeks": 56,
+        "missed_high_weeks": 1
+      },
+      {
+        "district": "Vavuniya",
+        "accuracy": 0.8276,
+        "weeks": 58,
+        "actual_high_weeks": 0,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Mullaitivu",
+        "accuracy": 0.8793,
+        "weeks": 58,
+        "actual_high_weeks": 0,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Colombo",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Galle",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Gampaha",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Kalutara",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Kandy",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Kegalle",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      },
+      {
+        "district": "Ratnapura",
+        "accuracy": 1.0,
+        "weeks": 58,
+        "actual_high_weeks": 58,
+        "missed_high_weeks": 0
+      }
+    ],
+    "top_missed_high_risk_weeks": [
+      {
+        "district": "Batticaloa",
+        "year": 2025,
+        "week": 1,
+        "actual_cases": 62,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Matale",
+        "year": 2025,
+        "week": 36,
+        "actual_cases": 31,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Badulla",
+        "year": 2025,
+        "week": 3,
+        "actual_cases": 28,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Trincomalee",
+        "year": 2025,
+        "week": 50,
+        "actual_cases": 26,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Monaragala",
+        "year": 2025,
+        "week": 1,
+        "actual_cases": 25,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Badulla",
+        "year": 2025,
+        "week": 21,
+        "actual_cases": 25,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "NuwaraEliya",
+        "year": 2025,
+        "week": 29,
+        "actual_cases": 24,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Hambantota",
+        "year": 2025,
+        "week": 17,
+        "actual_cases": 23,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Puttalam",
+        "year": 2025,
+        "week": 45,
+        "actual_cases": 23,
+        "predicted_risk": "Medium"
+      },
+      {
+        "district": "Ampara",
+        "year": 2026,
+        "week": 2,
+        "actual_cases": 21,
+        "predicted_risk": "Medium"
+      }
+    ]
+  }
+}

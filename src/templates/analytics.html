@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Analytics - Dengue Outbreak Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background: #205474;
+            color: #FFFFFF;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header - Top Navigation Bar */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 73px;
+            background: rgba(10, 15, 18, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            padding: 16px 80px;
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1280px;
+            height: 40px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 25px;
+            color: #00F2FF;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 28px;
+            letter-spacing: -0.5px;
+            color: #FFFFFF;
+        }
+
+        .profile-container {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 9999px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 18px;
+            right: 80px;
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 217, 255, 0.25);
+            padding: 6px 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            z-index: 90;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #8ca8c4;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lang-btn:hover {
+            color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .lang-btn.active {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00ffff;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 114px;
+            left: 67px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #FFFFFF;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 242, 255, 0.4);
+            transform: translateX(-5px);
+        }
+
+        .back-icon {
+            font-size: 20px;
+            color: #00F2FF;
+        }
+
+        .back-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 140px 80px 120px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Page Title */
+        .page-title {
+            font-weight: 700;
+            font-size: 48px;
+            line-height: 72px;
+            text-align: center;
+            letter-spacing: -1.8px;
+            color: #FFFFFF;
+            text-shadow: 0px 0px 20px rgba(0, 242, 255, 0.6);
+            margin-bottom: 48px;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            padding: 48px;
+            margin-bottom: 32px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            color: #00F2FF;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 24px;
+            line-height: 32px;
+            color: #00F2FF;
+        }
+
+        .card-description {
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 29px;
+            color: #FFFFFF;
+            margin-bottom: 24px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .stat-item {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: rgba(0, 242, 255, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 36px;
+            line-height: 44px;
+            color: #00F2FF;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 20px;
+            color: #94A3B8;
+        }
+
+        .metric-note {
+            margin-top: 14px;
+            color: #BFD6E2;
+            font-size: 14px;
+            line-height: 22px;
+        }
+
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .metrics-table th,
+        .metrics-table td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .metrics-table th {
+            color: #00F2FF;
+            background: rgba(0, 242, 255, 0.08);
+            font-weight: 700;
+        }
+
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Feature List */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: rgba(0, 242, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #00F2FF;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #FFFFFF;
+        }
+
+        .feature-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: #00F2FF;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin-top: 24px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #00F2FF, rgba(0, 242, 255, 0.2));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 32px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00F2FF;
+            box-shadow: 0 0 12px rgba(0, 242, 255, 0.6);
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            font-size: 18px;
+            color: #00F2FF;
+            margin-bottom: 8px;
+        }
+
+        .timeline-description {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: #CBD5E1;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 48px 80px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 64px;
+        }
+
+        .footer-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-link {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 20px;
+            color: #64748B;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #00F2FF;
+        }
+
+        .footer-credit {
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 16px;
+            text-align: right;
+            color: #64748B;
+        }
+
+        /* Integrated framework theme refresh */
+        body {
+            color: #ffffff;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+                radial-gradient(circle at 18% 22%, rgba(0, 195, 208, 0.22), transparent 34%),
+                radial-gradient(circle at 88% 12%, rgba(45, 118, 183, 0.22), transparent 30%),
+                linear-gradient(135deg, #071820 0%, #123443 48%, #0b2633 100%);
+            background-size: 72px 72px, 72px 72px, auto, auto, auto;
+        }
+
+        .top-header {
+            height: 72px;
+            padding: 16px max(24px, calc((100vw - 1180px) / 2));
+            background: rgba(7, 24, 32, 0.84);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-container {
+            max-width: 1180px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 195, 208, 0.13);
+            border: 1px solid rgba(0, 195, 208, 0.32);
+            color: #00c3d0;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .profile-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        .profile-icon {
+            width: auto;
+            height: auto;
+            background: transparent;
+            font-size: 18px;
+        }
+
+        .language-switcher {
+            top: 18px;
+            right: max(24px, calc((100vw - 1180px) / 2));
+            border-radius: 999px;
+            background: rgba(7, 24, 32, 0.74);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+        }
+
+        .back-button {
+            top: 92px;
+            left: max(24px, calc((100vw - 1180px) / 2));
+            min-height: 36px;
+            padding: 0 12px;
+            gap: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.86);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.13);
+            border-color: rgba(0, 195, 208, 0.34);
+            transform: translateX(-3px);
+        }
+
+        .back-icon {
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .back-text {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .main-content {
+            width: min(1180px, calc(100% - 40px));
+            max-width: none;
+            padding: 150px 0 72px;
+        }
+
+        .page-title {
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.08;
+            letter-spacing: 0;
+            text-shadow: none;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            color: #102f3d;
+            background: #ffffff;
+            border: 1px solid rgba(11, 50, 67, 0.12);
+            border-radius: 8px;
+            box-shadow: 0 18px 44px rgba(2, 15, 22, 0.24);
+            backdrop-filter: none;
+        }
+
+        .card-icon,
+        .card-title,
+        .stat-value,
+        .feature-value,
+        .timeline-title {
+            color: #007c89;
+        }
+
+        .card-description,
+        .feature-name,
+        .timeline-description {
+            color: #526771;
+        }
+
+        .stat-item {
+            background: #f7fafb;
+            border: 1px solid rgba(11, 50, 67, 0.1);
+            border-radius: 8px;
+        }
+
+        .stat-item:hover {
+            background: #eef7f8;
+            border-color: rgba(0, 124, 137, 0.24);
+            transform: translateY(-2px);
+        }
+
+        .stat-label,
+        .metric-note {
+            color: #657781;
+        }
+
+        .metrics-table {
+            background: #ffffff;
+            border: 1px solid rgba(11, 50, 67, 0.12);
+        }
+
+        .metrics-table th {
+            color: #ffffff;
+            background: #0b2633;
+        }
+
+        .metrics-table td {
+            color: #102f3d;
+            border-bottom: 1px solid rgba(11, 50, 67, 0.08);
+        }
+
+        .feature-item {
+            background: #f7fafb;
+            border-left-color: #007c89;
+        }
+
+        .timeline::before {
+            background: linear-gradient(to bottom, #007c89, rgba(0, 124, 137, 0.16));
+        }
+
+        .timeline-item::before {
+            background: #007c89;
+            box-shadow: 0 0 0 4px rgba(0, 124, 137, 0.12);
+        }
+
+        .footer {
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 26px 0 34px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .back-button {
+                left: 24px;
+            }
+
+            .main-content {
+                padding: 140px 24px 80px;
+            }
+
+            .top-header {
+                padding: 16px 24px;
+            }
+
+            .footer {
+                padding: 32px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 36px;
+                line-height: 44px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-button {
+                top: 90px;
+                left: 16px;
+            }
+
+            .language-switcher {
+                top: 18px;
+                right: 24px;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <div class="top-header">
+        <div class="header-container">
+            <div class="logo-container">
+                <div class="logo-text">DengueOutbreak</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" id="lang-en" onclick="switchLanguage('en')">EN</button>
+        <button class="lang-btn" id="lang-si" onclick="switchLanguage('si')">SI</button>
+    </div>
+
+    <!-- Back Button -->
+<a href="/prediction-home" class="back-button">
+        <i class="fas fa-arrow-left back-icon"></i>
+        <span class="back-text" data-i18n="back">Back</span>
+    </a>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Title -->
+        <h1 class="page-title" data-i18n="page_title">About the Model & Analytics</h1>
+
+        <!-- Model Overview -->
+        <div class="info-card">
+            <div class="card-header">
+                <i class="fas fa-brain card-icon"></i>
+                <h2 class="card-title" data-i18n="model_overview">Model Overview</h2>
+            </div>
+            <p class="card-description" data-i18n="model_description">
+                This predictive engine leverages advanced machine learning to forecast dengue outbreaks across Sri Lanka. By capturing complex, non-linear relationships between climatic factors (such as rainfall and temperature) and historical case data, the system helps public health officials anticipate and prepare for potential epidemics.
+            </p>
+
+            <!-- Statistics Grid -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="modelAccuracyValue">--</div>
+                    <div class="stat-label" data-i18n="stat_accuracy">Model Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label" data-i18n="stat_features">Input Features</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">25</div>
+                    <div class="stat-label" data-i18n="stat_districts">Districts Covered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" data-i18n="stat_days_value">7 Days</div>
+                    <div class="stat-label" data-i18n="stat_days_label">Forecast Horizon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-World Backtest -->
+        <div class="info-card" id="realWorldEvaluationCard">
+            <div class="card-header">
+                <i class="fas fa-clipboard-check card-icon"></i>
+                <h2 class="card-title">Real-World Backtest</h2>
+            </div>
+            <p class="card-description" id="evaluationSummary">
+                Loading external validation metrics...
+            </p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="balancedAccuracyValue">--</div>
+                    <div class="stat-label">Balanced Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="highRecallValue">--</div>
+                    <div class="stat-label">High-Risk Recall</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="highPrecisionValue">--</div>
+                    <div class="stat-label">High-Risk Precision</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="testRowsValue">--</div>
+                    <div class="stat-label">Unseen Test Rows</div>
+                </div>
+            </div>
+            <p class="metric-note">
+                These metrics are measured on newer official WER dengue reports and Open-Meteo weather data that were not used for training.
+            </p>
+            <table class="metrics-table" id="classMetricsTable">
+                <thead>
+                    <tr>
+                        <th>Risk Class</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1</th>
+                        <th>Weeks</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <table class="metrics-table" id="confusionMatrixTable">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Feature Importance -->
+        <div class="info-card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar card-icon"></i>
+                <h2 class="card-title" data-i18n="feature_importance">Feature Importance</h2>
+            </div>
+            <p class="card-description" data-i18n="feature_description">
+                The model uses XGBoost algorithm with 15 carefully engineered features. Here are the top features that drive predictions:
+            </p>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="feat_3week">Cases 3-Week Average</span>
+                    <span class="feature-value">62.7%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="feat_lastweek">Cases Last Week</span>
+                    <span class="feature-value">14.5%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="feat_trend">Case Trend</span>
+                    <span class="feature-value">10.9%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="feat_2weeks">Cases 2 Weeks Ago</span>
+                    <span class="feature-value">4.8%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="feat_temprange">Temperature Range</span>
+                    <span class="feature-value">2.1%</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="feat_other">Other Features (10)</span>
+                    <span class="feature-value">5.0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+            <!-- Risk Classification -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-exclamation-triangle card-icon"></i>
+                    <h2 class="card-title" data-i18n="risk_class">Risk Classification</h2>
+                </div>
+                <p class="card-description" data-i18n="risk_description">
+                    The system categorizes dengue risk into three levels based on predicted case counts:
+                </p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <span class="feature-name" data-i18n="risk_low">Low Risk</span>
+                        <span class="feature-value">≤ 10 cases</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-name" data-i18n="risk_medium">Medium Risk</span>
+                        <span class="feature-value">4-9 cases</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-name" data-i18n="risk_high">High Risk</span>
+                        <span class="feature-value">10+ cases</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Sources -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-database card-icon"></i>
+                    <h2 class="card-title" data-i18n="data_sources">Data Sources</h2>
+                </div>
+                <p class="card-description" data-i18n="data_description">
+                    The prediction model is built on comprehensive datasets:
+                </p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <span class="feature-name" data-i18n="data_historical">Historical Cases</span>
+                        <span class="feature-value" data-i18n="data_years">10+ years</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-name" data-i18n="data_weather">Weather Data</span>
+                        <span class="feature-value">Open-Meteo API</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-name" data-i18n="data_forecast">Forecast Updates</span>
+                        <span class="feature-value" data-i18n="data_realtime">Real-time</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biological Timeline Integration -->
+        <div class="info-card">
+            <div class="card-header">
+                <i class="fas fa-timeline card-icon"></i>
+                <h2 class="card-title" data-i18n="bio_timeline">Biological Timeline Integration</h2>
+            </div>
+            <p class="card-description" data-i18n="bio_description">
+                The model implicitly captures the complete dengue transmission cycle through lag features that span the entire biological timeline:
+            </p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-title" data-i18n="bio_mosquito_title">Days 0-14: Mosquito Development</div>
+                    <div class="timeline-description" data-i18n="bio_mosquito_desc">
+                        Aedes aegypti mosquitoes develop from eggs to adults in 10-14 days under optimal conditions (warm temperatures, standing water).
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title" data-i18n="bio_virus_title">Days 0-12: Virus Incubation (Mosquito)</div>
+                    <div class="timeline-description" data-i18n="bio_virus_desc">
+                        After biting an infected person, the virus incubates in the mosquito for 8-12 days before it becomes infectious.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title" data-i18n="bio_human_title">Days 0-7: Human Incubation</div>
+                    <div class="timeline-description" data-i18n="bio_human_desc">
+                        Once a person is bitten by an infected mosquito, symptoms appear after 4-7 days of incubation.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title" data-i18n="bio_lag_title">3-Week Lag Features</div>
+                    <div class="timeline-description" data-i18n="bio_lag_desc">
+                        The model's lag features (Cases_last_week, Cases_2_weeks_ago, Cases_3week_avg) effectively capture this ~3-week transmission cycle, allowing the system to learn outbreak momentum patterns without explicit biological modeling.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Optimization -->
+        <div class="info-card">
+            <div class="card-header">
+                <i class="fas fa-rocket card-icon"></i>
+                <h2 class="card-title" data-i18n="optimization">Model Optimization Process</h2>
+            </div>
+            <p class="card-description" data-i18n="optimization_desc">
+                The enhanced model achieved significant accuracy improvements through systematic optimization:
+            </p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">83.47%</div>
+                    <div class="stat-label" data-i18n="opt_baseline">Baseline Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">93.60%</div>
+                    <div class="stat-label" data-i18n="opt_enhanced">Enhanced Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">+10.13%</div>
+                    <div class="stat-label" data-i18n="opt_improvement">Improvement</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">432</div>
+                    <div class="stat-label" data-i18n="opt_combinations">Hyperparameter Combinations Tested</div>
+                </div>
+            </div>
+            <div class="feature-list" style="margin-top: 24px;">
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="opt_algorithm">Algorithm</span>
+                    <span class="feature-value">XGBoost</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="opt_estimators">Estimators</span>
+                    <span class="feature-value">300</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="opt_depth">Max Depth</span>
+                    <span class="feature-value">7</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-name" data-i18n="opt_learning">Learning Rate</span>
+                    <span class="feature-value">0.2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="#" class="footer-link" data-i18n="footer_privacy">Privacy Policy</a>
+                <a href="#" class="footer-link" data-i18n="footer_terms">Terms of Service</a>
+                <a href="#" class="footer-link" data-i18n="footer_docs">Documentation</a>
+                <a href="#" class="footer-link" data-i18n="footer_contact">Contact</a>
+            </div>
+            <div class="footer-credit">
+                <span data-i18n="year">© 2026</span> DengueOutbreak AI System
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translations
+        const translations = {
+            en: {
+                back: 'Back',
+                page_title: 'About the Model & Analytics',
+                model_overview: 'Model Overview',
+                model_description: 'This predictive engine leverages advanced machine learning to forecast dengue outbreaks across Sri Lanka. By capturing complex, non-linear relationships between climatic factors (such as rainfall and temperature) and historical case data, the system helps public health officials anticipate and prepare for potential epidemics.',
+                stat_accuracy: 'Model Accuracy',
+                stat_features: 'Input Features',
+                stat_districts: 'Districts Covered',
+                stat_days_value: '7 Days',
+                stat_days_label: 'Forecast Horizon',
+                feature_importance: 'Feature Importance',
+                feature_description: 'The model uses XGBoost algorithm with 15 carefully engineered features. Here are the top features that drive predictions:',
+                feat_3week: 'Cases 3-Week Average',
+                feat_lastweek: 'Cases Last Week',
+                feat_trend: 'Case Trend',
+                feat_2weeks: 'Cases 2 Weeks Ago',
+                feat_temprange: 'Temperature Range',
+                feat_other: 'Other Features (10)',
+                risk_class: 'Risk Classification',
+                risk_description: 'The system categorizes dengue risk into three levels based on predicted case counts:',
+                risk_low: 'Low Risk',
+                risk_medium: 'Medium Risk',
+                risk_high: 'High Risk',
+                data_sources: 'Data Sources',
+                data_description: 'The prediction model is built on comprehensive datasets:',
+                data_historical: 'Historical Cases',
+                data_years: '10+ years',
+                data_weather: 'Weather Data',
+                data_forecast: 'Forecast Updates',
+                data_realtime: 'Real-time',
+                bio_timeline: 'Biological Timeline Integration',
+                bio_description: 'The model implicitly captures the complete dengue transmission cycle through lag features that span the entire biological timeline:',
+                bio_mosquito_title: 'Days 0-14: Mosquito Development',
+                bio_mosquito_desc: 'Aedes aegypti mosquitoes develop from eggs to adults in 10-14 days under optimal conditions (warm temperatures, standing water).',
+                bio_virus_title: 'Days 0-12: Virus Incubation (Mosquito)',
+                bio_virus_desc: 'After biting an infected person, the virus incubates in the mosquito for 8-12 days before it becomes infectious.',
+                bio_human_title: 'Days 0-7: Human Incubation',
+                bio_human_desc: 'Once a person is bitten by an infected mosquito, symptoms appear after 4-7 days of incubation.',
+                bio_lag_title: '3-Week Lag Features',
+                bio_lag_desc: "The model's lag features (Cases_last_week, Cases_2_weeks_ago, Cases_3week_avg) effectively capture this ~3-week transmission cycle, allowing the system to learn outbreak momentum patterns without explicit biological modeling.",
+                optimization: 'Model Optimization Process',
+                optimization_desc: 'The enhanced model achieved significant accuracy improvements through systematic optimization:',
+                opt_baseline: 'Baseline Accuracy',
+                opt_enhanced: 'Enhanced Accuracy',
+                opt_improvement: 'Improvement',
+                opt_combinations: 'Hyperparameter Combinations Tested',
+                opt_algorithm: 'Algorithm',
+                opt_estimators: 'Estimators',
+                opt_depth: 'Max Depth',
+                opt_learning: 'Learning Rate',
+                footer_privacy: 'Privacy Policy',
+                footer_terms: 'Terms of Service',
+                footer_docs: 'Documentation',
+                footer_contact: 'Contact',
+                year: '© 2026'
+            },
+            si: {
+                back: 'ආපසු',
+                page_title: 'ආකෘතිය සහ විශ්ලේෂණ ගැන',
+                model_overview: 'ආකෘති දළ විශ්ලේෂණය',
+                model_description: 'මෙම පුරෝකථන එන්ජිම ශ්‍රී ලංකාව පුරා ඩෙංගු පැතිරීම් පුරෝකථනය කිරීම සඳහා උසස් යන්ත්‍ර ඉගෙනීම උත්තර කරයි. දේශගුණ සාධක (වර්ෂාපතනය සහ උෂ්ණත්වය වැනි) සහ ඓතිහාසික සිද්ධි දත්ත අතර සංකීර්ණ, රේඛීය නොවන සම්බන්ධතා ග්‍රහණය කරගනිමින්, මෙම පද්ධතිය සංභාව්‍ය වසංගත සඳහා අපේක්ෂා කිරීමට සහ සූදානම් වීමට මහජන සෞඛ්‍ය නිලධාරීන්ට උපකාර කරයි.',
+                stat_accuracy: 'ආකෘති නිරවද්‍යතාව',
+                stat_features: 'ආදාන ලක්ෂණ',
+                stat_districts: 'ආවරණය වූ දිස්ත්‍රික්ක',
+                stat_days_value: 'දින 7',
+                stat_days_label: 'පුරෝකථන ක්ෂිතිජය',
+                feature_importance: 'ලක්ෂණ වැදගත්කම',
+                feature_description: 'ආකෘතිය ප්‍රවේශමෙන් ඉංජිනේරු කරන ලද ලක්ෂණ 15 ක් සමඟ XGBoost ඇල්ගොරිතම භාවිතා කරයි. පුරෝකථන ධාවනය කරන ප්‍රධාන ලක්ෂණ මෙන්න:',
+                feat_3week: 'සිද්ධි 3-සති සාමාන්‍යය',
+                feat_lastweek: 'පසුගිය සතියේ සිද්ධි',
+                feat_trend: 'සිද්ධි ප්‍රවණතාව',
+                feat_2weeks: 'සති 2 කට පෙර සිද්ධි',
+                feat_temprange: 'උෂ්ණත්ව පරාසය',
+                feat_other: 'අනෙකුත් ලක්ෂණ (10)',
+                risk_class: 'අවදානම් වර්ගීකරණය',
+                risk_description: 'පද්ධතිය පුරෝකථනය කරන ලද සිද්ධි ගණන මත පදනම්ව ඩෙංගු අවදානම මට්ටම් තුනකට වර්ග කරයි:',
+                risk_low: 'අඩු අවදානම',
+                risk_medium: 'මධ්‍යම අවදානම',
+                risk_high: 'ඉහළ අවදානම',
+                data_sources: 'දත්ත ප්‍රභව',
+                data_description: 'පුරෝකථන ආකෘතිය විස්තීර්ණ දත්ත කට්ටල මත ගොඩනගා ඇත:',
+                data_historical: 'ඓතිහාසික සිද්ධි',
+                data_years: 'වසර 10+',
+                data_weather: 'කාලගුණ දත්ත',
+                data_forecast: 'පුරෝකථන යාවත්කාලීන',
+                data_realtime: 'තාත්‍ක්ෂණික',
+                bio_timeline: 'ජීව විද්‍යාත්මක කාල රාමුව ඒකාබද්ධ කිරීම',
+                bio_description: 'ආකෘතිය සම්පූර්ණ ජීව විද්‍යාත්මක කාලරාමුව පුරා විහිදෙන ප්‍රමාද ලක්ෂණ හරහා සම්පූර්ණ ඩෙංගු සම්ප්‍රේෂණ චක්‍රය ව්‍යංගයෙන් ග්‍රහණය කරයි:',
+                bio_mosquito_title: 'දින 0-14: මදුරු සංවර්ධනය',
+                bio_mosquito_desc: 'ඊඩීස් ඊජිප්ටි මදුරු ප්‍රශස්ත තත්ත්වයන් යටතේ (උණුසුම් උෂ්ණත්වය, එකතැන පවතින ජලය) දින 10-14 කින් බිත්තරවලින් වැඩිහිටියන් දක්වා වර්ධනය වේ.',
+                bio_virus_title: 'දින 0-12: වෛරස් පුර්ව ලක්ෂණ (මදුරු)',
+                bio_virus_desc: 'ආසාදිත පුද්ගලයෙකු දෂ්ට කිරීමෙන් පසු, වෛරසය ආසාදිත වීමට පෙර දින 8-12 ක් මදුරුවන් තුළ පුර්ව ලක්ෂණ වේ.',
+                bio_human_title: 'දින 0-7: මානව පුර්ව ලක්ෂණ',
+                bio_human_desc: 'පුද්ගලයෙකු ආසාදිත මදුරෙකු විසින් දෂ්ට කළ පසු, පුර්ව ලක්ෂණ දින 4-7 කට පසු රෝග ලක්ෂණ දිස්වේ.',
+                bio_lag_title: 'සති 3 ප්‍රමාද ලක්ෂණ',
+                bio_lag_desc: 'ආකෘතියේ ප්‍රමාද ලක්ෂණ (Cases_last_week, Cases_2_weeks_ago, Cases_3week_avg) මෙම ~සති 3 සම්ප්‍රේෂණ චක්‍රය ඵලදායී ලෙස ග්‍රහණය කරයි, පැහැදිලි ජීව විද්‍යාත්මක ආකෘති නොමැතිව පුපුරණ ගම්‍යතා රටා ඉගෙන ගැනීමට පද්ධතියට ඉඩ සලසයි.',
+                optimization: 'ආකෘති ප්‍රශස්තකරණ ක්‍රියාවලිය',
+                optimization_desc: 'වැඩිදියුණු කළ ආකෘතිය ක්‍රමානුකූල ප්‍රශස්තකරණය හරහා සැලකිය යුතු නිරවද්‍යතා වැඩිදියුණු කිරීම් අත්කර ගත්තේය:',
+                opt_baseline: 'මූලික නිරවද්‍යතාව',
+                opt_enhanced: 'වැඩිදියුණු කළ නිරවද්‍යතාව',
+                opt_improvement: 'වැඩිදියුණු කිරීම',
+                opt_combinations: 'අධි පරාමිති සංයෝජන පරීක්ෂා කළ',
+                opt_algorithm: 'ඇල්ගොරිතම',
+                opt_estimators: 'ඇස්තමේන්තු',
+                opt_depth: 'උපරිම ගැඹුර',
+                opt_learning: 'ඉගෙනුම් අනුපාතය',
+                footer_privacy: 'රහස්‍යතා ප්‍රතිපත්තිය',
+                footer_terms: 'සේවා කොන්දේසි',
+                footer_docs: 'ලේඛන',
+                footer_contact: 'සම්බන්ධ වන්න',
+                year: '© 2026'
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('dengue_language') || 'en';
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('dengue_language', lang);
+            updatePageLanguage();
+        }
+
+        function updatePageLanguage() {
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = translations[currentLanguage][key] || translations.en[key];
+                element.textContent = translation;
+            });
+
+            // Update button active states
+            document.getElementById('lang-en').classList.toggle('active', currentLanguage === 'en');
+            document.getElementById('lang-si').classList.toggle('active', currentLanguage === 'si');
+        }
+
+        function formatPercent(value) {
+            if (value === null || value === undefined || Number.isNaN(Number(value))) return '--';
+            return `${(Number(value) * 100).toFixed(2)}%`;
+        }
+
+        function renderClassMetrics(byClass) {
+            const tbody = document.querySelector('#classMetricsTable tbody');
+            if (!tbody || !byClass) return;
+
+            const rows = [
+                ['Low', byClass.low],
+                ['Medium', byClass.medium],
+                ['High', byClass.high]
+            ];
+
+            tbody.innerHTML = rows.map(([label, metrics]) => `
+                <tr>
+                    <td>${label}</td>
+                    <td>${formatPercent(metrics.precision)}</td>
+                    <td>${formatPercent(metrics.recall)}</td>
+                    <td>${formatPercent(metrics.f1)}</td>
+                    <td>${metrics.support.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderConfusionMatrix(confusionMatrix) {
+            const table = document.getElementById('confusionMatrixTable');
+            if (!table || !confusionMatrix) return;
+
+            const labels = confusionMatrix.labels;
+            const matrix = confusionMatrix.matrix;
+
+            table.querySelector('thead').innerHTML = `
+                <tr>
+                    <th>Actual \\ Predicted</th>
+                    ${labels.map(label => `<th>${label}</th>`).join('')}
+                </tr>
+            `;
+            table.querySelector('tbody').innerHTML = matrix.map((row, index) => `
+                <tr>
+                    <th>${labels[index]}</th>
+                    ${row.map(value => `<td>${Number(value).toLocaleString()}</td>`).join('')}
+                </tr>
+            `).join('');
+        }
+
+        async function loadRealWorldEvaluation() {
+            try {
+                const response = await fetch('/api/model-evaluation');
+                const data = await response.json();
+                if (!data.success) throw new Error(data.evaluation?.message || 'Evaluation report unavailable');
+
+                const evaluation = data.evaluation;
+                const metrics = evaluation.metrics;
+                const trainYears = evaluation.train_data.years.join('-');
+                const testYears = evaluation.test_data.years.join('-');
+
+                document.getElementById('modelAccuracyValue').textContent = formatPercent(metrics.accuracy);
+                document.getElementById('balancedAccuracyValue').textContent = formatPercent(metrics.balanced_accuracy);
+                document.getElementById('highRecallValue').textContent = formatPercent(metrics.high_risk_recall);
+                document.getElementById('highPrecisionValue').textContent = formatPercent(metrics.high_risk_precision);
+                document.getElementById('testRowsValue').textContent = evaluation.test_data.rows.toLocaleString();
+                document.getElementById('evaluationSummary').textContent =
+                    `Trained on ${trainYears} historical rows and tested on ${testYears} official unseen rows (${evaluation.test_data.weeks} weeks, ${evaluation.test_data.districts} districts).`;
+
+                renderClassMetrics(metrics.by_class);
+                renderConfusionMatrix(metrics.confusion_matrix);
+            } catch (error) {
+                document.getElementById('modelAccuracyValue').textContent = 'N/A';
+                document.getElementById('evaluationSummary').textContent = error.message;
+            }
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePageLanguage();
+            loadRealWorldEvaluation();
+        });
+    </script>
+</body>
+</html>

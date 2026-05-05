@@ -1,0 +1,10 @@
+APScheduler
+Flask
+joblib
+numpy
+pandas
+pymupdf
+pypdf
+requests
+scikit-learn
+xgboost
