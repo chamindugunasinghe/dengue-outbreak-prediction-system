@@ -3,8 +3,9 @@ Flask
 joblib
 numpy
 pandas
-pymupdf
+PyMuPDF
 pypdf
 requests
 scikit-learn
 xgboost
+gunicorn
